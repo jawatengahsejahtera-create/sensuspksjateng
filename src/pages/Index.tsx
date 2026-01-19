@@ -5,7 +5,8 @@ import { CategorySelector } from "@/components/CategorySelector";
 import { DataChart } from "@/components/DataChart";
 import { SummaryCards } from "@/components/SummaryCards";
 import { DataCategory } from "@/data/pksData";
-import { BarChart3, Search, Database } from "lucide-react";
+import { BarChart3, Search } from "lucide-react";
+import logoPks from "@/assets/logo-pks.jpg";
 
 const Index = () => {
   const [selectedKabupaten, setSelectedKabupaten] = useState("");
@@ -20,9 +21,11 @@ const Index = () => {
       <header className="gradient-primary text-primary-foreground py-8 px-4 mb-8">
         <div className="container max-w-7xl mx-auto">
           <div className="flex items-center gap-4 mb-4">
-            <div className="p-3 rounded-xl bg-white/10 backdrop-blur-sm">
-              <Database className="w-8 h-8" />
-            </div>
+            <img 
+              src={logoPks} 
+              alt="Logo PKS" 
+              className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-white p-1 shadow-lg object-contain"
+            />
             <div>
               <h1 className="text-2xl md:text-3xl font-bold">
                 Sistem Sensus Data Anggota PKS
