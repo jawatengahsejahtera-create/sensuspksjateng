@@ -587,10 +587,170 @@ export const pendapatanNishabData: Record<string, Record<string, {
     A4: { dibawahNishab: 19, diatasNishab: 17 },
     A5: { dibawahNishab: 3, diatasNishab: 4 }
   },
+  "KAB. BATANG": { 
+    A3: { dibawahNishab: 66, diatasNishab: 13 },
+    A4: { dibawahNishab: 12, diatasNishab: 5 },
+    A5: { dibawahNishab: 2, diatasNishab: 2 }
+  },
+  "KAB. BLORA": { 
+    A3: { dibawahNishab: 45, diatasNishab: 10 },
+    A4: { dibawahNishab: 9, diatasNishab: 5 },
+    A5: { dibawahNishab: 0, diatasNishab: 6 }
+  },
+  "KAB. BOYOLALI": { 
+    A3: { dibawahNishab: 146, diatasNishab: 41 },
+    A4: { dibawahNishab: 30, diatasNishab: 18 },
+    A5: { dibawahNishab: 4, diatasNishab: 4 }
+  },
+  "KAB. BREBES": { 
+    A3: { dibawahNishab: 63, diatasNishab: 8 },
+    A4: { dibawahNishab: 11, diatasNishab: 9 },
+    A5: { dibawahNishab: 4, diatasNishab: 2 }
+  },
+  "KAB. CILACAP": { 
+    A3: { dibawahNishab: 133, diatasNishab: 44 },
+    A4: { dibawahNishab: 33, diatasNishab: 17 },
+    A5: { dibawahNishab: 6, diatasNishab: 5 }
+  },
+  "KAB. DEMAK": { 
+    A3: { dibawahNishab: 54, diatasNishab: 11 },
+    A4: { dibawahNishab: 26, diatasNishab: 8 },
+    A5: { dibawahNishab: 7, diatasNishab: 5 }
+  },
+  "KAB. GROBOGAN": { 
+    A3: { dibawahNishab: 39, diatasNishab: 13 },
+    A4: { dibawahNishab: 8, diatasNishab: 4 },
+    A5: { dibawahNishab: 1, diatasNishab: 0 }
+  },
+  "KAB. JEPARA": { 
+    A3: { dibawahNishab: 38, diatasNishab: 14 },
+    A4: { dibawahNishab: 3, diatasNishab: 7 },
+    A5: { dibawahNishab: 4, diatasNishab: 2 }
+  },
+  "KAB. KARANGANYAR": { 
+    A3: { dibawahNishab: 137, diatasNishab: 47 },
+    A4: { dibawahNishab: 24, diatasNishab: 24 },
+    A5: { dibawahNishab: 3, diatasNishab: 9 }
+  },
+  "KAB. KEBUMEN": { 
+    A3: { dibawahNishab: 63, diatasNishab: 15 },
+    A4: { dibawahNishab: 7, diatasNishab: 2 },
+    A5: { dibawahNishab: 4, diatasNishab: 5 }
+  },
+  "KAB. KENDAL": { 
+    A3: { dibawahNishab: 69, diatasNishab: 15 },
+    A4: { dibawahNishab: 8, diatasNishab: 4 },
+    A5: { dibawahNishab: 8, diatasNishab: 5 }
+  },
+  "KAB. KLATEN": { 
+    A3: { dibawahNishab: 205, diatasNishab: 50 },
+    A4: { dibawahNishab: 55, diatasNishab: 19 },
+    A5: { dibawahNishab: 13, diatasNishab: 9 }
+  },
+  "KAB. KUDUS": { 
+    A3: { dibawahNishab: 71, diatasNishab: 20 },
+    A4: { dibawahNishab: 34, diatasNishab: 19 },
+    A5: { dibawahNishab: 9, diatasNishab: 7 }
+  },
+  "KAB. MAGELANG": { 
+    A3: { dibawahNishab: 101, diatasNishab: 16 },
+    A4: { dibawahNishab: 14, diatasNishab: 11 },
+    A5: { dibawahNishab: 2, diatasNishab: 6 }
+  },
+  "KAB. PATI": { 
+    A3: { dibawahNishab: 49, diatasNishab: 22 },
+    A4: { dibawahNishab: 10, diatasNishab: 5 },
+    A5: { dibawahNishab: 2, diatasNishab: 6 }
+  },
+  "KAB. PEKALONGAN": { 
+    A3: { dibawahNishab: 70, diatasNishab: 7 },
+    A4: { dibawahNishab: 11, diatasNishab: 5 },
+    A5: { dibawahNishab: 2, diatasNishab: 1 }
+  },
+  "KAB. PEMALANG": { 
+    A3: { dibawahNishab: 88, diatasNishab: 14 },
+    A4: { dibawahNishab: 32, diatasNishab: 6 },
+    A5: { dibawahNishab: 5, diatasNishab: 0 }
+  },
+  "KAB. PURBALINGGA": { 
+    A3: { dibawahNishab: 58, diatasNishab: 14 },
+    A4: { dibawahNishab: 15, diatasNishab: 11 },
+    A5: { dibawahNishab: 1, diatasNishab: 5 }
+  },
+  "KAB. PURWOREJO": { 
+    A3: { dibawahNishab: 74, diatasNishab: 18 },
+    A4: { dibawahNishab: 10, diatasNishab: 11 },
+    A5: { dibawahNishab: 4, diatasNishab: 2 }
+  },
+  "KAB. REMBANG": { 
+    A3: { dibawahNishab: 35, diatasNishab: 1 },
+    A4: { dibawahNishab: 4, diatasNishab: 2 },
+    A5: { dibawahNishab: 0, diatasNishab: 1 }
+  },
+  "KAB. SEMARANG": { 
+    A3: { dibawahNishab: 129, diatasNishab: 30 },
+    A4: { dibawahNishab: 33, diatasNishab: 24 },
+    A5: { dibawahNishab: 6, diatasNishab: 14 }
+  },
+  "KAB. SRAGEN": { 
+    A3: { dibawahNishab: 130, diatasNishab: 24 },
+    A4: { dibawahNishab: 20, diatasNishab: 19 },
+    A5: { dibawahNishab: 9, diatasNishab: 8 }
+  },
+  "KAB. SUKOHARJO": { 
+    A3: { dibawahNishab: 142, diatasNishab: 39 },
+    A4: { dibawahNishab: 51, diatasNishab: 33 },
+    A5: { dibawahNishab: 15, diatasNishab: 11 }
+  },
+  "KAB. TEGAL": { 
+    A3: { dibawahNishab: 115, diatasNishab: 28 },
+    A4: { dibawahNishab: 22, diatasNishab: 18 },
+    A5: { dibawahNishab: 10, diatasNishab: 7 }
+  },
+  "KAB. TEMANGGUNG": { 
+    A3: { dibawahNishab: 71, diatasNishab: 7 },
+    A4: { dibawahNishab: 15, diatasNishab: 11 },
+    A5: { dibawahNishab: 4, diatasNishab: 4 }
+  },
+  "KAB. WONOGIRI": { 
+    A3: { dibawahNishab: 213, diatasNishab: 30 },
+    A4: { dibawahNishab: 56, diatasNishab: 37 },
+    A5: { dibawahNishab: 5, diatasNishab: 9 }
+  },
+  "KAB. WONOSOBO": { 
+    A3: { dibawahNishab: 38, diatasNishab: 9 },
+    A4: { dibawahNishab: 10, diatasNishab: 5 },
+    A5: { dibawahNishab: 1, diatasNishab: 1 }
+  },
+  "KOTA MAGELANG": { 
+    A3: { dibawahNishab: 29, diatasNishab: 9 },
+    A4: { dibawahNishab: 9, diatasNishab: 4 },
+    A5: { dibawahNishab: 0, diatasNishab: 2 }
+  },
+  "KOTA PEKALONGAN": { 
+    A3: { dibawahNishab: 37, diatasNishab: 14 },
+    A4: { dibawahNishab: 13, diatasNishab: 9 },
+    A5: { dibawahNishab: 0, diatasNishab: 0 }
+  },
+  "KOTA SALATIGA": { 
+    A3: { dibawahNishab: 47, diatasNishab: 16 },
+    A4: { dibawahNishab: 6, diatasNishab: 11 },
+    A5: { dibawahNishab: 0, diatasNishab: 7 }
+  },
   "KOTA SEMARANG": { 
     A3: { dibawahNishab: 295, diatasNishab: 131 },
     A4: { dibawahNishab: 86, diatasNishab: 75 },
     A5: { dibawahNishab: 25, diatasNishab: 42 }
+  },
+  "KOTA SURAKARTA": { 
+    A3: { dibawahNishab: 137, diatasNishab: 60 },
+    A4: { dibawahNishab: 33, diatasNishab: 42 },
+    A5: { dibawahNishab: 7, diatasNishab: 15 }
+  },
+  "KOTA TEGAL": { 
+    A3: { dibawahNishab: 40, diatasNishab: 21 },
+    A4: { dibawahNishab: 6, diatasNishab: 7 },
+    A5: { dibawahNishab: 3, diatasNishab: 3 }
   }
 };
 
@@ -651,10 +811,170 @@ export const frekKonflikData: Record<string, Record<string, {
     A4: { tidakPernah: 9, sangatJarang: 26, jarang: 12, cukupSering: 2, sering: 0 },
     A5: { tidakPernah: 2, sangatJarang: 7, jarang: 0, cukupSering: 1, sering: 0 }
   },
+  "KAB. BATANG": { 
+    A3: { tidakPernah: 19, sangatJarang: 44, jarang: 27, cukupSering: 6, sering: 2 },
+    A4: { tidakPernah: 7, sangatJarang: 11, jarang: 6, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 4, sangatJarang: 2, jarang: 0, cukupSering: 0, sering: 0 }
+  },
+  "KAB. BLORA": { 
+    A3: { tidakPernah: 20, sangatJarang: 42, jarang: 9, cukupSering: 0, sering: 0 },
+    A4: { tidakPernah: 5, sangatJarang: 9, jarang: 4, cukupSering: 1, sering: 0 },
+    A5: { tidakPernah: 1, sangatJarang: 6, jarang: 0, cukupSering: 0, sering: 0 }
+  },
+  "KAB. BOYOLALI": { 
+    A3: { tidakPernah: 47, sangatJarang: 95, jarang: 59, cukupSering: 12, sering: 0 },
+    A4: { tidakPernah: 22, sangatJarang: 36, jarang: 14, cukupSering: 2, sering: 1 },
+    A5: { tidakPernah: 4, sangatJarang: 7, jarang: 4, cukupSering: 0, sering: 0 }
+  },
+  "KAB. BREBES": { 
+    A3: { tidakPernah: 13, sangatJarang: 37, jarang: 18, cukupSering: 4, sering: 0 },
+    A4: { tidakPernah: 8, sangatJarang: 11, jarang: 1, cukupSering: 0, sering: 1 },
+    A5: { tidakPernah: 2, sangatJarang: 4, jarang: 0, cukupSering: 0, sering: 0 }
+  },
+  "KAB. CILACAP": { 
+    A3: { tidakPernah: 57, sangatJarang: 98, jarang: 46, cukupSering: 8, sering: 7 },
+    A4: { tidakPernah: 25, sangatJarang: 29, jarang: 6, cukupSering: 2, sering: 0 },
+    A5: { tidakPernah: 12, sangatJarang: 6, jarang: 3, cukupSering: 0, sering: 0 }
+  },
+  "KAB. DEMAK": { 
+    A3: { tidakPernah: 20, sangatJarang: 29, jarang: 23, cukupSering: 8, sering: 0 },
+    A4: { tidakPernah: 12, sangatJarang: 27, jarang: 8, cukupSering: 1, sering: 1 },
+    A5: { tidakPernah: 8, sangatJarang: 6, jarang: 2, cukupSering: 0, sering: 1 }
+  },
+  "KAB. GROBOGAN": { 
+    A3: { tidakPernah: 13, sangatJarang: 42, jarang: 11, cukupSering: 1, sering: 2 },
+    A4: { tidakPernah: 10, sangatJarang: 7, jarang: 2, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 1, sangatJarang: 1, jarang: 0, cukupSering: 0, sering: 0 }
+  },
+  "KAB. JEPARA": { 
+    A3: { tidakPernah: 13, sangatJarang: 35, jarang: 20, cukupSering: 0, sering: 1 },
+    A4: { tidakPernah: 3, sangatJarang: 11, jarang: 0, cukupSering: 1, sering: 0 },
+    A5: { tidakPernah: 2, sangatJarang: 3, jarang: 1, cukupSering: 0, sering: 0 }
+  },
+  "KAB. KARANGANYAR": { 
+    A3: { tidakPernah: 34, sangatJarang: 119, jarang: 52, cukupSering: 4, sering: 3 },
+    A4: { tidakPernah: 23, sangatJarang: 40, jarang: 10, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 3, sangatJarang: 8, jarang: 4, cukupSering: 0, sering: 0 }
+  },
+  "KAB. KEBUMEN": { 
+    A3: { tidakPernah: 22, sangatJarang: 45, jarang: 27, cukupSering: 2, sering: 0 },
+    A4: { tidakPernah: 4, sangatJarang: 7, jarang: 5, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 5, sangatJarang: 4, jarang: 1, cukupSering: 0, sering: 0 }
+  },
+  "KAB. KENDAL": { 
+    A3: { tidakPernah: 25, sangatJarang: 48, jarang: 32, cukupSering: 3, sering: 1 },
+    A4: { tidakPernah: 9, sangatJarang: 13, jarang: 3, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 4, sangatJarang: 11, jarang: 1, cukupSering: 0, sering: 0 }
+  },
+  "KAB. KLATEN": { 
+    A3: { tidakPernah: 72, sangatJarang: 153, jarang: 82, cukupSering: 12, sering: 1 },
+    A4: { tidakPernah: 32, sangatJarang: 44, jarang: 25, cukupSering: 1, sering: 0 },
+    A5: { tidakPernah: 9, sangatJarang: 20, jarang: 4, cukupSering: 1, sering: 0 }
+  },
+  "KAB. KUDUS": { 
+    A3: { tidakPernah: 26, sangatJarang: 60, jarang: 29, cukupSering: 7, sering: 1 },
+    A4: { tidakPernah: 22, sangatJarang: 31, jarang: 18, cukupSering: 1, sering: 0 },
+    A5: { tidakPernah: 7, sangatJarang: 14, jarang: 6, cukupSering: 0, sering: 0 }
+  },
+  "KAB. MAGELANG": { 
+    A3: { tidakPernah: 27, sangatJarang: 70, jarang: 32, cukupSering: 4, sering: 1 },
+    A4: { tidakPernah: 7, sangatJarang: 24, jarang: 4, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 3, sangatJarang: 7, jarang: 0, cukupSering: 0, sering: 0 }
+  },
+  "KAB. PATI": { 
+    A3: { tidakPernah: 28, sangatJarang: 49, jarang: 9, cukupSering: 3, sering: 0 },
+    A4: { tidakPernah: 15, sangatJarang: 8, jarang: 1, cukupSering: 1, sering: 0 },
+    A5: { tidakPernah: 5, sangatJarang: 4, jarang: 0, cukupSering: 0, sering: 0 }
+  },
+  "KAB. PEKALONGAN": { 
+    A3: { tidakPernah: 22, sangatJarang: 41, jarang: 28, cukupSering: 2, sering: 1 },
+    A4: { tidakPernah: 7, sangatJarang: 7, jarang: 8, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 0, sangatJarang: 3, jarang: 0, cukupSering: 1, sering: 0 }
+  },
+  "KAB. PEMALANG": { 
+    A3: { tidakPernah: 24, sangatJarang: 53, jarang: 37, cukupSering: 1, sering: 5 },
+    A4: { tidakPernah: 15, sangatJarang: 24, jarang: 8, cukupSering: 1, sering: 0 },
+    A5: { tidakPernah: 1, sangatJarang: 5, jarang: 1, cukupSering: 0, sering: 0 }
+  },
+  "KAB. PURBALINGGA": { 
+    A3: { tidakPernah: 18, sangatJarang: 50, jarang: 23, cukupSering: 1, sering: 1 },
+    A4: { tidakPernah: 8, sangatJarang: 16, jarang: 8, cukupSering: 0, sering: 1 },
+    A5: { tidakPernah: 1, sangatJarang: 7, jarang: 1, cukupSering: 0, sering: 0 }
+  },
+  "KAB. PURWOREJO": { 
+    A3: { tidakPernah: 28, sangatJarang: 63, jarang: 31, cukupSering: 4, sering: 0 },
+    A4: { tidakPernah: 7, sangatJarang: 18, jarang: 3, cukupSering: 1, sering: 0 },
+    A5: { tidakPernah: 2, sangatJarang: 4, jarang: 1, cukupSering: 0, sering: 0 }
+  },
+  "KAB. REMBANG": { 
+    A3: { tidakPernah: 7, sangatJarang: 14, jarang: 9, cukupSering: 0, sering: 0 },
+    A4: { tidakPernah: 6, sangatJarang: 7, jarang: 2, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 1, sangatJarang: 0, jarang: 0, cukupSering: 0, sering: 0 }
+  },
+  "KAB. SEMARANG": { 
+    A3: { tidakPernah: 60, sangatJarang: 81, jarang: 50, cukupSering: 3, sering: 3 },
+    A4: { tidakPernah: 26, sangatJarang: 33, jarang: 7, cukupSering: 0, sering: 1 },
+    A5: { tidakPernah: 15, sangatJarang: 12, jarang: 1, cukupSering: 0, sering: 0 }
+  },
+  "KAB. SRAGEN": { 
+    A3: { tidakPernah: 48, sangatJarang: 84, jarang: 39, cukupSering: 7, sering: 1 },
+    A4: { tidakPernah: 10, sangatJarang: 35, jarang: 12, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 7, sangatJarang: 8, jarang: 5, cukupSering: 0, sering: 0 }
+  },
+  "KAB. SUKOHARJO": { 
+    A3: { tidakPernah: 50, sangatJarang: 107, jarang: 76, cukupSering: 8, sering: 2 },
+    A4: { tidakPernah: 34, sangatJarang: 50, jarang: 18, cukupSering: 5, sering: 0 },
+    A5: { tidakPernah: 19, sangatJarang: 16, jarang: 5, cukupSering: 0, sering: 0 }
+  },
+  "KAB. TEGAL": { 
+    A3: { tidakPernah: 38, sangatJarang: 99, jarang: 40, cukupSering: 3, sering: 3 },
+    A4: { tidakPernah: 15, sangatJarang: 38, jarang: 6, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 7, sangatJarang: 15, jarang: 6, cukupSering: 0, sering: 0 }
+  },
+  "KAB. TEMANGGUNG": { 
+    A3: { tidakPernah: 18, sangatJarang: 39, jarang: 23, cukupSering: 3, sering: 1 },
+    A4: { tidakPernah: 15, sangatJarang: 14, jarang: 5, cukupSering: 1, sering: 1 },
+    A5: { tidakPernah: 6, sangatJarang: 2, jarang: 1, cukupSering: 0, sering: 0 }
+  },
+  "KAB. WONOGIRI": { 
+    A3: { tidakPernah: 76, sangatJarang: 140, jarang: 72, cukupSering: 15, sering: 3 },
+    A4: { tidakPernah: 34, sangatJarang: 60, jarang: 17, cukupSering: 5, sering: 0 },
+    A5: { tidakPernah: 11, sangatJarang: 10, jarang: 0, cukupSering: 0, sering: 0 }
+  },
+  "KAB. WONOSOBO": { 
+    A3: { tidakPernah: 14, sangatJarang: 23, jarang: 13, cukupSering: 1, sering: 0 },
+    A4: { tidakPernah: 3, sangatJarang: 12, jarang: 2, cukupSering: 1, sering: 0 },
+    A5: { tidakPernah: 0, sangatJarang: 2, jarang: 0, cukupSering: 0, sering: 0 }
+  },
+  "KOTA MAGELANG": { 
+    A3: { tidakPernah: 11, sangatJarang: 27, jarang: 15, cukupSering: 0, sering: 1 },
+    A4: { tidakPernah: 4, sangatJarang: 9, jarang: 3, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 2, sangatJarang: 1, jarang: 0, cukupSering: 0, sering: 0 }
+  },
+  "KOTA PEKALONGAN": { 
+    A3: { tidakPernah: 16, sangatJarang: 34, jarang: 18, cukupSering: 2, sering: 1 },
+    A4: { tidakPernah: 12, sangatJarang: 14, jarang: 7, cukupSering: 1, sering: 0 },
+    A5: { tidakPernah: 1, sangatJarang: 1, jarang: 1, cukupSering: 0, sering: 0 }
+  },
+  "KOTA SALATIGA": { 
+    A3: { tidakPernah: 20, sangatJarang: 41, jarang: 20, cukupSering: 7, sering: 1 },
+    A4: { tidakPernah: 9, sangatJarang: 11, jarang: 3, cukupSering: 0, sering: 0 },
+    A5: { tidakPernah: 5, sangatJarang: 4, jarang: 0, cukupSering: 0, sering: 1 }
+  },
   "KOTA SEMARANG": { 
     A3: { tidakPernah: 123, sangatJarang: 262, jarang: 140, cukupSering: 24, sering: 6 },
     A4: { tidakPernah: 52, sangatJarang: 119, jarang: 39, cukupSering: 5, sering: 3 },
     A5: { tidakPernah: 28, sangatJarang: 49, jarang: 17, cukupSering: 0, sering: 0 }
+  },
+  "KOTA SURAKARTA": { 
+    A3: { tidakPernah: 42, sangatJarang: 153, jarang: 78, cukupSering: 8, sering: 5 },
+    A4: { tidakPernah: 23, sangatJarang: 57, jarang: 16, cukupSering: 2, sering: 0 },
+    A5: { tidakPernah: 15, sangatJarang: 12, jarang: 0, cukupSering: 1, sering: 0 }
+  },
+  "KOTA TEGAL": { 
+    A3: { tidakPernah: 16, sangatJarang: 45, jarang: 20, cukupSering: 1, sering: 1 },
+    A4: { tidakPernah: 7, sangatJarang: 9, jarang: 4, cukupSering: 1, sering: 0 },
+    A5: { tidakPernah: 4, sangatJarang: 6, jarang: 1, cukupSering: 1, sering: 0 }
   }
 };
 
