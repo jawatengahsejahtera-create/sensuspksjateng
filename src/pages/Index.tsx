@@ -5,13 +5,16 @@ import { CategorySelector } from "@/components/CategorySelector";
 import { DataChart } from "@/components/DataChart";
 import { SummaryCards } from "@/components/SummaryCards";
 import { DataCategory } from "@/data/pksData";
-import { BarChart3, Search } from "lucide-react";
+import { BarChart3, Search, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import logoPks from "@/assets/logo-pks.jpg";
 
 const Index = () => {
   const [selectedKabupaten, setSelectedKabupaten] = useState("");
   const [selectedJenjang, setSelectedJenjang] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<DataCategory>("jumlahAnggota");
+  const { user, signOut } = useAuth();
 
   const isSearchReady = selectedKabupaten && selectedJenjang;
 
@@ -20,19 +23,35 @@ const Index = () => {
       {/* Header */}
       <header className="gradient-primary text-primary-foreground py-8 px-4 mb-8">
         <div className="container max-w-7xl mx-auto">
-          <div className="flex items-center gap-4 mb-4">
-            <img 
-              src={logoPks} 
-              alt="Logo PKS" 
-              className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-white p-1 shadow-lg object-contain"
-            />
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold">
-                Sistem Sensus Data Anggota PKS
-              </h1>
-              <p className="text-primary-foreground/80 text-sm md:text-base">
-                Jawa Tengah
-              </p>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <img 
+                src={logoPks} 
+                alt="Logo PKS" 
+                className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-white p-1 shadow-lg object-contain"
+              />
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold">
+                  Sistem Sensus Data Anggota PKS
+                </h1>
+                <p className="text-primary-foreground/80 text-sm md:text-base">
+                  Jawa Tengah
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-primary-foreground/80 hidden md:block">
+                {user?.email}
+              </span>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={signOut}
+                className="gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="hidden md:inline">Logout</span>
+              </Button>
             </div>
           </div>
           <p className="max-w-2xl text-primary-foreground/90 text-sm md:text-base leading-relaxed">
