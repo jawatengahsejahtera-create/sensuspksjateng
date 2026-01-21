@@ -85,9 +85,12 @@ const Index = () => {
         <div className="space-y-6">
           <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-primary" />
-            Data Keseluruhan Jawa Tengah
+            {isSearchReady ? `Data ${selectedKabupaten} - Jenjang ${selectedJenjang}` : "Data Keseluruhan Jawa Tengah"}
           </h2>
-          <OverviewChart />
+          <OverviewChart 
+            selectedKabupaten={selectedKabupaten} 
+            selectedJenjang={selectedJenjang} 
+          />
         </div>
 
         {/* Detailed Content */}
