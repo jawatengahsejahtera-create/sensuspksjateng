@@ -1,7 +1,8 @@
-import { BarChart3, Calendar, Users, LogOut } from "lucide-react";
+import { Calendar, Users, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { ProfileSettings } from "@/components/ProfileSettings";
 import logoPks from "@/assets/logo-pks.jpg";
 
 import {
@@ -89,12 +90,13 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border p-4">
+      <SidebarFooter className="border-t border-border p-4 space-y-2">
         {!collapsed && user && (
-          <div className="mb-3">
+          <div className="mb-2">
             <p className="text-xs text-muted-foreground truncate">{user.email}</p>
           </div>
         )}
+        <ProfileSettings collapsed={collapsed} />
         <Button
           variant="ghost"
           size={collapsed ? "icon" : "sm"}
