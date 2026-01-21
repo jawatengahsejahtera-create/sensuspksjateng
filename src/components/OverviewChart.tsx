@@ -18,6 +18,12 @@ import {
   kabupatenList,
   jumlahAnggotaData,
   jenisKelaminData,
+  kelompokUmurData,
+  statusKerjaData,
+  punyaBinaanData,
+  bayarIuranData,
+  pendapatanNishabData,
+  frekKonflikData,
 } from "@/data/pksData";
 
 const COLORS = [
@@ -26,6 +32,7 @@ const COLORS = [
   "hsl(217, 91%, 60%)",
   "hsl(45, 100%, 50%)",
   "hsl(280, 65%, 60%)",
+  "hsl(180, 70%, 45%)",
 ];
 
 export const OverviewChart = () => {
@@ -87,10 +94,166 @@ export const OverviewChart = () => {
       .slice(0, 10);
   }, []);
 
+  // Aggregate kelompok umur data
+  const kelompokUmurAggregated = useMemo(() => {
+    let babyBoomer = 0, genX = 0, milenial = 0, genZ = 0;
+    kabupatenList.forEach((kab) => {
+      const data = kelompokUmurData[kab];
+      if (data) {
+        ["A3", "A4", "A5"].forEach((jenjang) => {
+          const j = data[jenjang];
+          if (j) {
+            babyBoomer += j.babyBoomer || 0;
+            genX += j.genX || 0;
+            milenial += j.milenial || 0;
+            genZ += j.genZ || 0;
+          }
+        });
+      }
+    });
+    return [
+      { name: "Baby Boomer", value: babyBoomer, fill: COLORS[0] },
+      { name: "Gen X", value: genX, fill: COLORS[1] },
+      { name: "Milenial", value: milenial, fill: COLORS[2] },
+      { name: "Gen Z", value: genZ, fill: COLORS[3] },
+    ];
+  }, []);
+
+  // Aggregate status kerja data
+  const statusKerjaAggregated = useMemo(() => {
+    let bekerja = 0, tidakBekerja = 0;
+    kabupatenList.forEach((kab) => {
+      const data = statusKerjaData[kab];
+      if (data) {
+        ["A3", "A4", "A5"].forEach((jenjang) => {
+          const j = data[jenjang];
+          if (j) {
+            bekerja += j.bekerja || 0;
+            tidakBekerja += j.tidakBekerja || 0;
+          }
+        });
+      }
+    });
+    return [
+      { name: "Bekerja", value: bekerja, fill: COLORS[1] },
+      { name: "Tidak Bekerja", value: tidakBekerja, fill: COLORS[0] },
+    ];
+  }, []);
+
+  // Aggregate punya binaan data
+  const punyaBinaanAggregated = useMemo(() => {
+    let punya = 0, tidak = 0;
+    kabupatenList.forEach((kab) => {
+      const data = punyaBinaanData[kab];
+      if (data) {
+        ["A3", "A4", "A5"].forEach((jenjang) => {
+          const j = data[jenjang];
+          if (j) {
+            punya += j.punya || 0;
+            tidak += j.tidak || 0;
+          }
+        });
+      }
+    });
+    return [
+      { name: "Punya Binaan", value: punya, fill: COLORS[1] },
+      { name: "Tidak Punya", value: tidak, fill: COLORS[4] },
+    ];
+  }, []);
+
+  // Aggregate bayar iuran data
+  const bayarIuranAggregated = useMemo(() => {
+    let ya = 0, tidak = 0;
+    kabupatenList.forEach((kab) => {
+      const data = bayarIuranData[kab];
+      if (data) {
+        ["A3", "A4", "A5"].forEach((jenjang) => {
+          const j = data[jenjang];
+          if (j) {
+            ya += j.ya || 0;
+            tidak += j.tidak || 0;
+          }
+        });
+      }
+    });
+    return [
+      { name: "Bayar Iuran", value: ya, fill: COLORS[2] },
+      { name: "Tidak Bayar", value: tidak, fill: COLORS[0] },
+    ];
+  }, []);
+
+  // Aggregate pendapatan nishab data
+  const pendapatanNishabAggregated = useMemo(() => {
+    let dibawah = 0, diatas = 0;
+    kabupatenList.forEach((kab) => {
+      const data = pendapatanNishabData[kab];
+      if (data) {
+        ["A3", "A4", "A5"].forEach((jenjang) => {
+          const j = data[jenjang];
+          if (j) {
+            dibawah += j.dibawahNishab || 0;
+            diatas += j.diatasNishab || 0;
+          }
+        });
+      }
+    });
+    return [
+      { name: "Di Bawah Nishab", value: dibawah, fill: COLORS[3] },
+      { name: "Di Atas Nishab", value: diatas, fill: COLORS[1] },
+    ];
+  }, []);
+
+  // Aggregate frekuensi konflik data
+  const frekKonflikAggregated = useMemo(() => {
+    let tidakPernah = 0, sangatJarang = 0, jarang = 0, cukupSering = 0, sering = 0;
+    kabupatenList.forEach((kab) => {
+      const data = frekKonflikData[kab];
+      if (data) {
+        ["A3", "A4", "A5"].forEach((jenjang) => {
+          const j = data[jenjang];
+          if (j) {
+            tidakPernah += j.tidakPernah || 0;
+            sangatJarang += j.sangatJarang || 0;
+            jarang += j.jarang || 0;
+            cukupSering += j.cukupSering || 0;
+            sering += j.sering || 0;
+          }
+        });
+      }
+    });
+    return [
+      { name: "Tidak Pernah", value: tidakPernah, fill: COLORS[1] },
+      { name: "Sangat Jarang", value: sangatJarang, fill: COLORS[2] },
+      { name: "Jarang", value: jarang, fill: COLORS[3] },
+      { name: "Cukup Sering", value: cukupSering, fill: COLORS[4] },
+      { name: "Sering", value: sering, fill: COLORS[0] },
+    ];
+  }, []);
+
   const renderCustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       const total = jenjangData.reduce((sum, item) => sum + item.value, 0);
+      const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : 0;
+      return (
+        <div className="bg-card border border-border rounded-lg shadow-lg p-3">
+          <p className="font-semibold text-foreground">{data.name}</p>
+          <p className="text-muted-foreground">
+            Jumlah: <span className="font-bold text-primary">{data.value.toLocaleString()}</span>
+          </p>
+          <p className="text-muted-foreground">
+            Persentase: <span className="font-bold text-primary">{percentage}%</span>
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const renderGenericTooltip = (dataArray: any[]) => ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      const total = dataArray.reduce((sum, item) => sum + item.value, 0);
       const percentage = total > 0 ? ((data.value / total) * 100).toFixed(1) : 0;
       return (
         <div className="bg-card border border-border rounded-lg shadow-lg p-3">
@@ -125,11 +288,11 @@ export const OverviewChart = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-card bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+        <Card className="shadow-card bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-full bg-green-500/20">
-                <UserCheck className="w-6 h-6 text-green-600" />
+              <div className="p-3 rounded-full bg-accent/20">
+                <UserCheck className="w-6 h-6 text-accent-foreground" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Kader Madya (A5)</p>
@@ -139,11 +302,11 @@ export const OverviewChart = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-card bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
+        <Card className="shadow-card bg-gradient-to-br from-secondary/30 to-secondary/10 border-secondary/20">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-full bg-blue-500/20">
-                <MapPin className="w-6 h-6 text-blue-600" />
+              <div className="p-3 rounded-full bg-secondary/40">
+                <MapPin className="w-6 h-6 text-secondary-foreground" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Kabupaten/Kota</p>
@@ -153,11 +316,11 @@ export const OverviewChart = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-card bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20">
+        <Card className="shadow-card bg-gradient-to-br from-muted/50 to-muted/20 border-muted/30">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-full bg-purple-500/20">
-                <TrendingUp className="w-6 h-6 text-purple-600" />
+              <div className="p-3 rounded-full bg-muted">
+                <TrendingUp className="w-6 h-6 text-muted-foreground" />
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Rasio L/P</p>
@@ -172,7 +335,7 @@ export const OverviewChart = () => {
         </Card>
       </div>
 
-      {/* Charts Row */}
+      {/* Charts Row 1 - Jenjang & Gender */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Jenjang Distribution */}
         <Card className="shadow-card">
@@ -226,7 +389,196 @@ export const OverviewChart = () => {
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
                   </Pie>
-                  <Tooltip content={renderCustomTooltip} />
+                  <Tooltip content={renderGenericTooltip(genderData)} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts Row 2 - Kelompok Umur & Status Kerja */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Kelompok Umur */}
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg">Distribusi Kelompok Umur</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={kelompokUmurAggregated}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    dataKey="value"
+                  >
+                    {kelompokUmurAggregated.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={renderGenericTooltip(kelompokUmurAggregated)} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Status Kerja */}
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg">Distribusi Status Kerja</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={statusKerjaAggregated}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    dataKey="value"
+                  >
+                    {statusKerjaAggregated.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={renderGenericTooltip(statusKerjaAggregated)} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts Row 3 - Punya Binaan & Bayar Iuran */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Punya Binaan */}
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg">Kepemilikan Kelompok Binaan</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={punyaBinaanAggregated}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    dataKey="value"
+                  >
+                    {punyaBinaanAggregated.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={renderGenericTooltip(punyaBinaanAggregated)} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Bayar Iuran */}
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg">Pembayaran Iuran Bulanan</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={bayarIuranAggregated}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    dataKey="value"
+                  >
+                    {bayarIuranAggregated.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={renderGenericTooltip(bayarIuranAggregated)} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts Row 4 - Pendapatan Nishab & Frekuensi Konflik */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Pendapatan Nishab */}
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg">Distribusi Pendapatan (Nishab)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pendapatanNishabAggregated}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    dataKey="value"
+                  >
+                    {pendapatanNishabAggregated.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={renderGenericTooltip(pendapatanNishabAggregated)} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Frekuensi Konflik */}
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg">Frekuensi Konflik dalam Keluarga</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={frekKonflikAggregated}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    dataKey="value"
+                  >
+                    {frekKonflikAggregated.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={renderGenericTooltip(frekKonflikAggregated)} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
