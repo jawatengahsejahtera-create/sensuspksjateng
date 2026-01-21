@@ -35,8 +35,18 @@ const COLORS = [
   "hsl(180, 70%, 45%)",
 ];
 
-export const OverviewChart = () => {
-  // Calculate total members across all kabupaten
+interface OverviewChartProps {
+  selectedKabupaten?: string;
+  selectedJenjang?: string;
+}
+
+export const OverviewChart = ({ selectedKabupaten, selectedJenjang }: OverviewChartProps) => {
+  // Determine if we're filtering or showing all data
+  const isFiltered = selectedKabupaten && selectedJenjang;
+  const kabupatenToUse = isFiltered ? [selectedKabupaten] : kabupatenList;
+  const jenjangToUse = isFiltered ? [selectedJenjang] : ["A3", "A4", "A5"];
+
+  // Calculate total members
   const totalStats = useMemo(() => {
     let totalA3 = 0;
     let totalA4 = 0;
@@ -44,12 +54,12 @@ export const OverviewChart = () => {
     let totalLakiLaki = 0;
     let totalPerempuan = 0;
 
-    kabupatenList.forEach((kab) => {
+    kabupatenToUse.forEach((kab) => {
       const anggota = jumlahAnggotaData[kab];
       if (anggota) {
-        totalA3 += anggota.A3 || 0;
-        totalA4 += anggota.A4 || 0;
-        totalA5 += anggota.A5 || 0;
+        if (jenjangToUse.includes("A3")) totalA3 += anggota.A3 || 0;
+        if (jenjangToUse.includes("A4")) totalA4 += anggota.A4 || 0;
+        if (jenjangToUse.includes("A5")) totalA5 += anggota.A5 || 0;
       }
       const jk = jenisKelaminData[kab];
       if (jk) {
@@ -65,16 +75,27 @@ export const OverviewChart = () => {
       totalAnggota: totalA3 + totalA4 + totalA5,
       totalLakiLaki,
       totalPerempuan,
-      totalKabupaten: kabupatenList.length,
+      totalKabupaten: kabupatenToUse.length,
     };
-  }, []);
+  }, [kabupatenToUse, jenjangToUse]);
 
   // Data for jenjang distribution pie chart
-  const jenjangData = useMemo(() => [
-    { name: "A3 (Kader Pemula)", value: totalStats.totalA3, fill: COLORS[0] },
-    { name: "A4 (Kader Muda)", value: totalStats.totalA4, fill: COLORS[1] },
-    { name: "A5 (Kader Madya)", value: totalStats.totalA5, fill: COLORS[2] },
-  ], [totalStats]);
+  const jenjangData = useMemo(() => {
+    if (isFiltered) {
+      // Show single jenjang when filtered
+      const jenjangValue = selectedJenjang === "A3" ? totalStats.totalA3 
+        : selectedJenjang === "A4" ? totalStats.totalA4 
+        : totalStats.totalA5;
+      return [
+        { name: `${selectedJenjang} (${selectedJenjang === "A3" ? "Kader Pemula" : selectedJenjang === "A4" ? "Kader Muda" : "Kader Madya"})`, value: jenjangValue, fill: COLORS[selectedJenjang === "A3" ? 0 : selectedJenjang === "A4" ? 1 : 2] },
+      ];
+    }
+    return [
+      { name: "A3 (Kader Pemula)", value: totalStats.totalA3, fill: COLORS[0] },
+      { name: "A4 (Kader Muda)", value: totalStats.totalA4, fill: COLORS[1] },
+      { name: "A5 (Kader Madya)", value: totalStats.totalA5, fill: COLORS[2] },
+    ];
+  }, [totalStats, isFiltered, selectedJenjang]);
 
   // Data for gender distribution pie chart
   const genderData = useMemo(() => [
@@ -82,8 +103,9 @@ export const OverviewChart = () => {
     { name: "Perempuan", value: totalStats.totalPerempuan, fill: COLORS[0] },
   ], [totalStats]);
 
-  // Top 10 kabupaten by total members
+  // Top 10 kabupaten by total members (only show when not filtered)
   const top10Kabupaten = useMemo(() => {
+    if (isFiltered) return [];
     return kabupatenList
       .map((kab) => {
         const data = jumlahAnggotaData[kab];
@@ -92,15 +114,15 @@ export const OverviewChart = () => {
       })
       .sort((a, b) => b.total - a.total)
       .slice(0, 10);
-  }, []);
+  }, [isFiltered]);
 
   // Aggregate kelompok umur data
   const kelompokUmurAggregated = useMemo(() => {
     let babyBoomer = 0, genX = 0, milenial = 0, genZ = 0;
-    kabupatenList.forEach((kab) => {
+    kabupatenToUse.forEach((kab) => {
       const data = kelompokUmurData[kab];
       if (data) {
-        ["A3", "A4", "A5"].forEach((jenjang) => {
+        jenjangToUse.forEach((jenjang) => {
           const j = data[jenjang];
           if (j) {
             babyBoomer += j.babyBoomer || 0;
@@ -117,15 +139,15 @@ export const OverviewChart = () => {
       { name: "Milenial", value: milenial, fill: COLORS[2] },
       { name: "Gen Z", value: genZ, fill: COLORS[3] },
     ];
-  }, []);
+  }, [kabupatenToUse, jenjangToUse]);
 
   // Aggregate status kerja data
   const statusKerjaAggregated = useMemo(() => {
     let bekerja = 0, tidakBekerja = 0;
-    kabupatenList.forEach((kab) => {
+    kabupatenToUse.forEach((kab) => {
       const data = statusKerjaData[kab];
       if (data) {
-        ["A3", "A4", "A5"].forEach((jenjang) => {
+        jenjangToUse.forEach((jenjang) => {
           const j = data[jenjang];
           if (j) {
             bekerja += j.bekerja || 0;
@@ -138,15 +160,15 @@ export const OverviewChart = () => {
       { name: "Bekerja", value: bekerja, fill: COLORS[1] },
       { name: "Tidak Bekerja", value: tidakBekerja, fill: COLORS[0] },
     ];
-  }, []);
+  }, [kabupatenToUse, jenjangToUse]);
 
   // Aggregate punya binaan data
   const punyaBinaanAggregated = useMemo(() => {
     let punya = 0, tidak = 0;
-    kabupatenList.forEach((kab) => {
+    kabupatenToUse.forEach((kab) => {
       const data = punyaBinaanData[kab];
       if (data) {
-        ["A3", "A4", "A5"].forEach((jenjang) => {
+        jenjangToUse.forEach((jenjang) => {
           const j = data[jenjang];
           if (j) {
             punya += j.punya || 0;
@@ -159,15 +181,15 @@ export const OverviewChart = () => {
       { name: "Punya Binaan", value: punya, fill: COLORS[1] },
       { name: "Tidak Punya", value: tidak, fill: COLORS[4] },
     ];
-  }, []);
+  }, [kabupatenToUse, jenjangToUse]);
 
   // Aggregate bayar iuran data
   const bayarIuranAggregated = useMemo(() => {
     let ya = 0, tidak = 0;
-    kabupatenList.forEach((kab) => {
+    kabupatenToUse.forEach((kab) => {
       const data = bayarIuranData[kab];
       if (data) {
-        ["A3", "A4", "A5"].forEach((jenjang) => {
+        jenjangToUse.forEach((jenjang) => {
           const j = data[jenjang];
           if (j) {
             ya += j.ya || 0;
@@ -180,15 +202,15 @@ export const OverviewChart = () => {
       { name: "Bayar Iuran", value: ya, fill: COLORS[2] },
       { name: "Tidak Bayar", value: tidak, fill: COLORS[0] },
     ];
-  }, []);
+  }, [kabupatenToUse, jenjangToUse]);
 
   // Aggregate pendapatan nishab data
   const pendapatanNishabAggregated = useMemo(() => {
     let dibawah = 0, diatas = 0;
-    kabupatenList.forEach((kab) => {
+    kabupatenToUse.forEach((kab) => {
       const data = pendapatanNishabData[kab];
       if (data) {
-        ["A3", "A4", "A5"].forEach((jenjang) => {
+        jenjangToUse.forEach((jenjang) => {
           const j = data[jenjang];
           if (j) {
             dibawah += j.dibawahNishab || 0;
@@ -201,15 +223,15 @@ export const OverviewChart = () => {
       { name: "Di Bawah Nishab", value: dibawah, fill: COLORS[3] },
       { name: "Di Atas Nishab", value: diatas, fill: COLORS[1] },
     ];
-  }, []);
+  }, [kabupatenToUse, jenjangToUse]);
 
   // Aggregate frekuensi konflik data
   const frekKonflikAggregated = useMemo(() => {
     let tidakPernah = 0, sangatJarang = 0, jarang = 0, cukupSering = 0, sering = 0;
-    kabupatenList.forEach((kab) => {
+    kabupatenToUse.forEach((kab) => {
       const data = frekKonflikData[kab];
       if (data) {
-        ["A3", "A4", "A5"].forEach((jenjang) => {
+        jenjangToUse.forEach((jenjang) => {
           const j = data[jenjang];
           if (j) {
             tidakPernah += j.tidakPernah || 0;
@@ -228,7 +250,7 @@ export const OverviewChart = () => {
       { name: "Cukup Sering", value: cukupSering, fill: COLORS[4] },
       { name: "Sering", value: sering, fill: COLORS[0] },
     ];
-  }, []);
+  }, [kabupatenToUse, jenjangToUse]);
 
   const renderCustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -270,8 +292,29 @@ export const OverviewChart = () => {
     return null;
   };
 
+  const getTitle = () => {
+    if (isFiltered) {
+      return `Data ${selectedKabupaten} - Jenjang ${selectedJenjang}`;
+    }
+    return "Data Keseluruhan Jawa Tengah";
+  };
+
   return (
     <div className="space-y-6">
+      {/* Filter Info Banner */}
+      {isFiltered && (
+        <Card className="bg-primary/10 border-primary/30">
+          <CardContent className="py-3">
+            <p className="text-sm text-center text-foreground">
+              Menampilkan data untuk <strong>{selectedKabupaten}</strong> - Jenjang <strong className="text-primary">{selectedJenjang}</strong>
+              {selectedJenjang === "A3" && " (Kader Pemula)"}
+              {selectedJenjang === "A4" && " (Kader Muda)"}
+              {selectedJenjang === "A5" && " (Kader Madya)"}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Summary Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="shadow-card bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
@@ -281,7 +324,7 @@ export const OverviewChart = () => {
                 <Users className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Total Anggota</p>
+                <p className="text-sm text-muted-foreground">{isFiltered ? `Total Anggota ${selectedJenjang}` : "Total Anggota"}</p>
                 <p className="text-2xl font-bold text-foreground">{totalStats.totalAnggota.toLocaleString()}</p>
               </div>
             </div>
@@ -295,8 +338,10 @@ export const OverviewChart = () => {
                 <UserCheck className="w-6 h-6 text-accent-foreground" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Kader Madya (A5)</p>
-                <p className="text-2xl font-bold text-foreground">{totalStats.totalA5.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">{isFiltered ? "Kabupaten" : "Kader Madya (A5)"}</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {isFiltered ? selectedKabupaten?.replace("KAB. ", "").replace("KOTA ", "") : totalStats.totalA5.toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -309,8 +354,10 @@ export const OverviewChart = () => {
                 <MapPin className="w-6 h-6 text-secondary-foreground" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Kabupaten/Kota</p>
-                <p className="text-2xl font-bold text-foreground">{totalStats.totalKabupaten}</p>
+                <p className="text-sm text-muted-foreground">{isFiltered ? "Jenjang" : "Kabupaten/Kota"}</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {isFiltered ? selectedJenjang : totalStats.totalKabupaten}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -340,7 +387,9 @@ export const OverviewChart = () => {
         {/* Jenjang Distribution */}
         <Card className="shadow-card">
           <CardHeader>
-            <CardTitle className="text-lg">Distribusi Jenjang Kaderisasi</CardTitle>
+            <CardTitle className="text-lg">
+              {isFiltered ? `Anggota ${selectedJenjang}` : "Distribusi Jenjang Kaderisasi"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-64">
@@ -587,38 +636,40 @@ export const OverviewChart = () => {
         </Card>
       </div>
 
-      {/* Top 10 Kabupaten Bar Chart */}
-      <Card className="shadow-card">
-        <CardHeader>
-          <CardTitle className="text-lg">Top 10 Kabupaten/Kota dengan Anggota Terbanyak</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={top10Kabupaten} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
-                  angle={-45}
-                  textAnchor="end"
-                  height={60}
-                />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "8px",
-                  }}
-                  formatter={(value: number) => [value.toLocaleString(), "Total Anggota"]}
-                />
-                <Bar dataKey="total" fill="hsl(0, 85%, 45%)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Top 10 Kabupaten Bar Chart - Only show when not filtered */}
+      {!isFiltered && (
+        <Card className="shadow-card">
+          <CardHeader>
+            <CardTitle className="text-lg">Top 10 Kabupaten/Kota dengan Anggota Terbanyak</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={top10Kabupaten} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                  />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px",
+                    }}
+                    formatter={(value: number) => [value.toLocaleString(), "Total Anggota"]}
+                  />
+                  <Bar dataKey="total" fill="hsl(0, 85%, 45%)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
