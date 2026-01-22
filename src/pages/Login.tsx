@@ -24,7 +24,7 @@ const Login = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -32,17 +32,64 @@ const Login = () => {
           },
         });
         if (error) throw error;
+        
+        // Create approval request for new user
+        if (data.user) {
+          await supabase.from("user_approvals").insert({
+            user_id: data.user.id,
+            email: data.user.email || email,
+            status: "pending",
+          });
+        }
+        
         toast({
           title: "Registrasi Berhasil!",
-          description: "Akun Anda telah dibuat. Silakan login.",
+          description: "Akun Anda telah dibuat. Menunggu persetujuan dari admin untuk dapat login.",
         });
         setIsSignUp(false);
+        // Sign out immediately after signup
+        await supabase.auth.signOut();
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
         if (error) throw error;
+
+        // Check if user is approved
+        const { data: approvalData } = await supabase
+          .from("user_approvals")
+          .select("status")
+          .eq("user_id", data.user.id)
+          .maybeSingle();
+
+        // Check if user is superadmin (bypass approval)
+        const { data: roleData } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", data.user.id)
+          .eq("role", "superadmin")
+          .maybeSingle();
+
+        const isSuperadmin = roleData?.role === "superadmin";
+        const isApproved = approvalData?.status === "approved";
+
+        if (!isSuperadmin && !isApproved) {
+          // Sign out the user if not approved
+          await supabase.auth.signOut();
+          
+          const statusMessage = approvalData?.status === "rejected" 
+            ? "Pendaftaran Anda ditolak oleh admin."
+            : "Akun Anda belum disetujui oleh admin. Silakan tunggu persetujuan.";
+          
+          toast({
+            title: "Akses Ditolak",
+            description: statusMessage,
+            variant: "destructive",
+          });
+          return;
+        }
+
         toast({
           title: "Login Berhasil!",
           description: "Selamat datang kembali.",

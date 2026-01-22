@@ -1,9 +1,11 @@
-import { Calendar, Users, LogOut, Building2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Calendar, Users, LogOut, Building2, UserCheck } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { ProfileSettings } from "@/components/ProfileSettings";
 import logoPks from "@/assets/logo-pks.jpg";
+import { supabase } from "@/integrations/supabase/client";
 
 import {
   Sidebar,
@@ -40,10 +42,37 @@ const menuItems = [
   },
 ];
 
+const adminMenuItems = [
+  { 
+    title: "Manajemen User", 
+    url: "/admin/approvals", 
+    icon: UserCheck,
+    description: "Kelola persetujuan pendaftaran user"
+  },
+];
+
 export function AppSidebar() {
   const { state } = useSidebar();
   const { user, signOut } = useAuth();
   const collapsed = state === "collapsed";
+  const [isSuperadmin, setIsSuperadmin] = useState(false);
+
+  useEffect(() => {
+    const checkSuperadmin = async () => {
+      if (!user) return;
+      
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "superadmin")
+        .maybeSingle();
+      
+      setIsSuperadmin(data?.role === "superadmin");
+    };
+    
+    checkSuperadmin();
+  }, [user]);
 
   return (
     <Sidebar className="border-r border-border bg-card">
@@ -94,6 +123,38 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {isSuperadmin && (
+          <SidebarGroup className="mt-4">
+            <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-2">
+              {!collapsed && "Admin"}
+            </SidebarGroupLabel>
+
+            <SidebarGroupContent>
+              <SidebarMenu className="space-y-1">
+                {adminMenuItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild className="w-full">
+                      <NavLink 
+                        to={item.url} 
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-all duration-200" 
+                        activeClassName="bg-primary/10 text-primary font-medium border-l-2 border-primary"
+                      >
+                        <item.icon className="h-5 w-5 flex-shrink-0" />
+                        {!collapsed && (
+                          <div className="min-w-0">
+                            <span className="block text-sm truncate">{item.title}</span>
+                            <span className="block text-xs text-muted-foreground truncate">{item.description}</span>
+                          </div>
+                        )}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-border p-4 space-y-2">
