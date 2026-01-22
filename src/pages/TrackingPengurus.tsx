@@ -40,6 +40,7 @@ import {
   type DPC,
 } from "@/data/dpcDpraData";
 import { kecamatanData, kabupatenCoordinates } from "@/data/kecamatanCoordinates";
+import { getDesaByKecamatan, DesaItem } from "@/data/desaData";
 import KecamatanMap from "@/components/KecamatanMap";
 
 export default function TrackingPengurus() {
@@ -93,8 +94,23 @@ export default function TrackingPengurus() {
     return list;
   }, [selectedDPD, selectedDPC, selectedDPRA]);
 
-  // Get unique DPRA list for dropdown based on selected kecamatan
+  // Get desa list for dropdown based on selected kecamatan (from desaData)
+  const allDesaList = useMemo((): DesaItem[] => {
+    if (selectedDPC === "all") return [];
+    return getDesaByKecamatan(selectedDPC);
+  }, [selectedDPC]);
+
+  // Get unique DPRA list for dropdown based on selected kecamatan (fallback to dpcDpraData)
   const dpraDropdownList = useMemo(() => {
+    // Jika ada data desa dari desaData, gunakan itu
+    if (allDesaList.length > 0) {
+      return allDesaList.map(desa => ({
+        kode: desa.kode,
+        nama: desa.nama,
+      }));
+    }
+    
+    // Fallback ke data dari dpcDpraData
     let list = getAllDPRA();
     
     if (selectedDPC !== "all") {
@@ -109,8 +125,8 @@ export default function TrackingPengurus() {
       }
     }
 
-    return list;
-  }, [selectedDPD, selectedDPC]);
+    return list.map(dpra => ({ kode: dpra.kode, nama: dpra.nama }));
+  }, [selectedDPD, selectedDPC, allDesaList]);
 
   // Pie chart data for Kecamatan
   const kecamatanPieData = useMemo(() => {
