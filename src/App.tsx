@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import RKRAT from "./pages/RKRAT";
+import TrackingPengurus from "./pages/TrackingPengurus";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -36,6 +37,16 @@ const App = () => (
               <ProtectedRoute>
                 <DashboardLayout>
                   <RKRAT />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tracking-pengurus"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <TrackingPengurus />
                 </DashboardLayout>
               </ProtectedRoute>
             }

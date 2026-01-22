@@ -1,4 +1,4 @@
-import { Calendar, Users, LogOut } from "lucide-react";
+import { Calendar, Users, LogOut, Building2 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,12 @@ const menuItems = [
     url: "/rkrat", 
     icon: Calendar,
     description: "Rencana Kerja & Anggaran Tahunan"
+  },
+  { 
+    title: "Tracking DPC & DPRA", 
+    url: "/tracking-pengurus", 
+    icon: Building2,
+    description: "Data pengurus tingkat Kecamatan & Desa"
   },
 ];
 
