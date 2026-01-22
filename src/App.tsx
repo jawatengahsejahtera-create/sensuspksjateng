@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import RKRAT from "./pages/RKRAT";
 import TrackingPengurus from "./pages/TrackingPengurus";
 import Login from "./pages/Login";
+import AdminApprovals from "./pages/AdminApprovals";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { DashboardLayout } from "./components/DashboardLayout";
@@ -47,6 +48,16 @@ const App = () => (
               <ProtectedRoute>
                 <DashboardLayout>
                   <TrackingPengurus />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/approvals"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <AdminApprovals />
                 </DashboardLayout>
               </ProtectedRoute>
             }
