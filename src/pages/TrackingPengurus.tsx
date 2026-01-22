@@ -337,68 +337,79 @@ export default function TrackingPengurus() {
         <CardContent className="p-0">
           <h2 className="text-lg font-semibold mb-4 text-foreground">FILTER PENCARIAN DATA</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Select 
-              value={selectedDPD} 
-              onValueChange={(val) => {
-                setSelectedDPD(val);
-                setSelectedDPC("all");
-                setSelectedDPRA("all");
-                setCurrentPage(1);
-              }}
-            >
-              <SelectTrigger className="w-full bg-background">
-                <SelectValue placeholder="Kabupaten/Kota" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Kabupaten/Kota</SelectItem>
-                {dpdList.map((dpd) => (
-                  <SelectItem key={dpd.kode} value={dpd.nama}>
-                    {dpd.nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-muted-foreground">Kabupaten/Kota</label>
+              <Select 
+                value={selectedDPD} 
+                onValueChange={(val) => {
+                  setSelectedDPD(val);
+                  setSelectedDPC("all");
+                  setSelectedDPRA("all");
+                  setCurrentPage(1);
+                }}
+              >
+                <SelectTrigger className="w-full bg-background">
+                  <SelectValue placeholder="Pilih Kabupaten/Kota" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Kabupaten/Kota</SelectItem>
+                  {dpdList.map((dpd) => (
+                    <SelectItem key={dpd.kode} value={dpd.nama}>
+                      {dpd.nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-            <Select 
-              value={selectedDPC} 
-              onValueChange={(val) => {
-                setSelectedDPC(val);
-                setSelectedDPRA("all");
-                setCurrentPage(1);
-              }}
-            >
-              <SelectTrigger className="w-full bg-background">
-                <SelectValue placeholder="Kecamatan" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Kecamatan</SelectItem>
-                {filteredDPCList.map((dpc) => (
-                  <SelectItem key={dpc.kode} value={dpc.kode}>
-                    {dpc.nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-muted-foreground">Kecamatan</label>
+              <Select 
+                value={selectedDPC} 
+                onValueChange={(val) => {
+                  setSelectedDPC(val);
+                  setSelectedDPRA("all");
+                  setCurrentPage(1);
+                }}
+                disabled={selectedDPD === "all"}
+              >
+                <SelectTrigger className={`w-full bg-background ${selectedDPD === "all" ? "opacity-50" : ""}`}>
+                  <SelectValue placeholder={selectedDPD === "all" ? "Pilih Kabupaten dahulu" : "Pilih Kecamatan"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Kecamatan</SelectItem>
+                  {filteredDPCList.map((dpc) => (
+                    <SelectItem key={dpc.kode} value={dpc.kode}>
+                      {dpc.nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-            <Select 
-              value={selectedDPRA} 
-              onValueChange={(val) => {
-                setSelectedDPRA(val);
-                setCurrentPage(1);
-              }}
-            >
-              <SelectTrigger className="w-full bg-background">
-                <SelectValue placeholder="Desa" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Desa</SelectItem>
-                {dpraDropdownList.map((dpra) => (
-                  <SelectItem key={dpra.kode} value={dpra.kode}>
-                    {dpra.nama}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-muted-foreground">Desa/Kelurahan</label>
+              <Select 
+                value={selectedDPRA} 
+                onValueChange={(val) => {
+                  setSelectedDPRA(val);
+                  setCurrentPage(1);
+                }}
+                disabled={selectedDPC === "all"}
+              >
+                <SelectTrigger className={`w-full bg-background ${selectedDPC === "all" ? "opacity-50" : ""}`}>
+                  <SelectValue placeholder={selectedDPC === "all" ? "Pilih Kecamatan dahulu" : "Pilih Desa/Kelurahan"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Desa/Kelurahan</SelectItem>
+                  {dpraDropdownList.map((dpra) => (
+                    <SelectItem key={dpra.kode} value={dpra.kode}>
+                      {dpra.nama}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
       </Card>
