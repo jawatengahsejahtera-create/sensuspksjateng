@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Building2, MapPin, Users, CheckCircle } from "lucide-react";
 import {
   PieChart,
   Pie,
@@ -23,6 +23,11 @@ import {
   ResponsiveContainer,
   Legend,
   Tooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
 } from "recharts";
 import {
   dpdList,
@@ -96,21 +101,37 @@ export default function TrackingPengurus() {
     return list;
   }, [selectedDPD, selectedDPC]);
 
-  // Pie chart data
-  const pieData = useMemo(() => {
-    const kosong = filteredDPRAList.filter(d => d.statusPendataan === "Kosong").length;
-    const adaPengurus = filteredDPRAList.filter(d => d.statusPendataan !== "Kosong").length;
-    
+  // Pie chart data for Kecamatan
+  const kecamatanPieData = useMemo(() => {
     return [
-      { name: "KOSONG", value: kosong, color: "#3b82f6" },
-      { name: "ADA PENGURUS", value: adaPengurus, color: "#f97316" },
+      { name: "ADA PENGURUS", value: stats.kecamatanDenganPengurus, color: "#f97316" },
+      { name: "KOSONG", value: stats.kecamatanKosong, color: "#94a3b8" },
     ];
-  }, [filteredDPRAList]);
+  }, [stats]);
 
-  // Calculate percentages for pie chart
-  const total = pieData[0].value + pieData[1].value;
-  const kosongPercentage = total > 0 ? ((pieData[0].value / total) * 100).toFixed(1) : "0";
-  const adaPengurusPercentage = total > 0 ? ((pieData[1].value / total) * 100).toFixed(1) : "0";
+  // Pie chart data for Desa
+  const desaPieData = useMemo(() => {
+    return [
+      { name: "ADA PENGURUS", value: stats.desaDenganPengurus, color: "#f97316" },
+      { name: "KOSONG", value: stats.desaKosong, color: "#94a3b8" },
+    ];
+  }, [stats]);
+
+  // Bar chart data for comparison
+  const barChartData = useMemo(() => {
+    return [
+      {
+        name: "Kecamatan",
+        "Ada Pengurus": stats.kecamatanDenganPengurus,
+        "Kosong": stats.kecamatanKosong,
+      },
+      {
+        name: "Desa/Kelurahan",
+        "Ada Pengurus": stats.desaDenganPengurus,
+        "Kosong": stats.desaKosong,
+      },
+    ];
+  }, [stats]);
 
   // Get parent DPC and DPD info for each DPRA
   const getDPRAParentInfo = (dpra: DPRA) => {
@@ -133,16 +154,187 @@ export default function TrackingPengurus() {
 
   // Google Maps embed URL for Jawa Tengah with markers
   const mapEmbedUrl = useMemo(() => {
-    // Create a basic map centered on Jawa Tengah
     return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2027587.0076538483!2d108.92039547500002!3d-7.150975!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e708b3d02c80c5b%3A0x9a20b547dcfbde00!2sJawa%20Tengah!5e0!3m2!1sid!2sid!4v1705000000000!5m2!1sid!2sid`;
   }, []);
 
   return (
     <div className="space-y-6">
+      {/* Summary Stats Cards - Row pertama */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white border-none">
+          <CardContent className="py-4 px-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-lg">
+                <Building2 className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium opacity-80">TOTAL KECAMATAN</p>
+                <p className="text-2xl font-bold">{stats.totalKecamatan.toLocaleString('id-ID')}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-none">
+          <CardContent className="py-4 px-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-lg">
+                <CheckCircle className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium opacity-80">KECAMATAN DENGAN PENGURUS</p>
+                <p className="text-2xl font-bold">{stats.kecamatanDenganPengurus.toLocaleString('id-ID')}</p>
+                <p className="text-xs opacity-80">({stats.persentaseKecamatanTerisi}%)</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-none">
+          <CardContent className="py-4 px-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-lg">
+                <MapPin className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium opacity-80">TOTAL DESA/KELURAHAN</p>
+                <p className="text-2xl font-bold">{stats.totalDesa.toLocaleString('id-ID')}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-none">
+          <CardContent className="py-4 px-5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-white/20 rounded-lg">
+                <Users className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-medium opacity-80">DESA DENGAN PENGURUS</p>
+                <p className="text-2xl font-bold">{stats.desaDenganPengurus.toLocaleString('id-ID')}</p>
+                <p className="text-xs opacity-80">({stats.persentaseDesaTerisi}%)</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts Section - Grafik Kecamatan dan Desa */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Grafik Kecamatan */}
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-4 text-center">
+              GRAFIK PENGURUS KECAMATAN (DPC)
+            </h3>
+            <div className="h-[280px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={kecamatanPieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={2}
+                    dataKey="value"
+                    label={({ name, percent }) => `${(percent * 100).toFixed(1)}%`}
+                    labelLine={false}
+                  >
+                    {kecamatanPieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value: number, name: string) => [value.toLocaleString('id-ID'), name]}
+                  />
+                  <Legend 
+                    verticalAlign="bottom" 
+                    height={36}
+                    formatter={(value) => <span className="text-sm">{value}</span>}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="text-center mt-2">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-semibold text-orange-500">{stats.kecamatanDenganPengurus}</span> dari <span className="font-semibold">{stats.totalKecamatan}</span> kecamatan memiliki pengurus
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Grafik Desa */}
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-4 text-center">
+              GRAFIK PENGURUS DESA/KELURAHAN (DPRA)
+            </h3>
+            <div className="h-[280px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={desaPieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={2}
+                    dataKey="value"
+                    label={({ name, percent }) => `${(percent * 100).toFixed(1)}%`}
+                    labelLine={false}
+                  >
+                    {desaPieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value: number, name: string) => [value.toLocaleString('id-ID'), name]}
+                  />
+                  <Legend 
+                    verticalAlign="bottom" 
+                    height={36}
+                    formatter={(value) => <span className="text-sm">{value}</span>}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="text-center mt-2">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-semibold text-orange-500">{stats.desaDenganPengurus.toLocaleString('id-ID')}</span> dari <span className="font-semibold">{stats.totalDesa.toLocaleString('id-ID')}</span> desa memiliki pengurus
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Bar Chart Comparison */}
+      <Card>
+        <CardContent className="pt-6">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4 text-center">
+            PERBANDINGAN STATUS PENGURUS DPC & DPRA JAWA TENGAH
+          </h3>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={barChartData} layout="vertical" margin={{ left: 80 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" tickFormatter={(value) => value.toLocaleString('id-ID')} />
+                <YAxis type="category" dataKey="name" />
+                <Tooltip formatter={(value: number) => value.toLocaleString('id-ID')} />
+                <Legend />
+                <Bar dataKey="Ada Pengurus" fill="#f97316" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="Kosong" fill="#94a3b8" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Filter Section */}
       <Card className="border-none shadow-none bg-transparent">
         <CardContent className="p-0">
-          <h2 className="text-lg font-semibold mb-4 text-foreground">FILTER PENCARIAN</h2>
+          <h2 className="text-lg font-semibold mb-4 text-foreground">FILTER PENCARIAN DATA</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Select 
               value={selectedDPD} 
@@ -210,69 +402,6 @@ export default function TrackingPengurus() {
         </CardContent>
       </Card>
 
-      {/* Stats Section with Pie Chart and Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pie Chart */}
-        <Card>
-          <CardContent className="pt-6">
-            <h3 className="text-sm font-semibold text-muted-foreground mb-4">
-              PRESENTASE JUMLAH RANTING
-            </h3>
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={0}
-                    outerRadius={100}
-                    paddingAngle={0}
-                    dataKey="value"
-                    label={({ name, percent }) => `${(percent * 100).toFixed(1)}%`}
-                    labelLine={false}
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: number, name: string) => [value, name]}
-                  />
-                  <Legend 
-                    verticalAlign="bottom" 
-                    height={36}
-                    formatter={(value) => <span className="text-sm">{value}</span>}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Stats Cards */}
-        <div className="flex flex-col gap-4 justify-center">
-          <Card className="bg-orange-500 text-white">
-            <CardContent className="py-6">
-              <p className="text-sm font-medium opacity-90">JUMLAH KECAMATAN</p>
-              <p className="text-4xl font-bold">{stats.totalDPC}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-orange-500 text-white">
-            <CardContent className="py-6">
-              <p className="text-sm font-medium opacity-90">JUMLAH DESA</p>
-              <p className="text-4xl font-bold">{stats.totalDPRA.toLocaleString('id-ID')}</p>
-            </CardContent>
-          </Card>
-          <Card className="bg-orange-500 text-white">
-            <CardContent className="py-6">
-              <p className="text-sm font-medium opacity-90">JUMLAH RANTING</p>
-              <p className="text-4xl font-bold">{stats.terisiPenuh + stats.sebagianTerisi}</p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
       {/* Table Section */}
       <Card>
         <CardContent className="pt-6">
@@ -308,7 +437,7 @@ export default function TrackingPengurus() {
                         <TableCell>{parentInfo.dpd}</TableCell>
                         <TableCell>{parentInfo.dpc}</TableCell>
                         <TableCell>{dpra.nama}</TableCell>
-                        <TableCell>{dpra.ketua.nama || <span className="text-muted-foreground">null</span>}</TableCell>
+                        <TableCell>{dpra.ketua.nama || <span className="text-muted-foreground">-</span>}</TableCell>
                         <TableCell>
                           {dpra.ketua.noHp ? (
                             <a
@@ -321,7 +450,7 @@ export default function TrackingPengurus() {
                               <ExternalLink className="h-3 w-3" />
                             </a>
                           ) : (
-                            <span className="text-muted-foreground">null</span>
+                            <span className="text-muted-foreground">-</span>
                           )}
                         </TableCell>
                         <TableCell>
@@ -406,12 +535,12 @@ export default function TrackingPengurus() {
           </div>
           <div className="flex items-center gap-4 mt-4 text-sm">
             <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded-full bg-blue-500"></span>
-              <span>KOSONG</span>
-            </div>
-            <div className="flex items-center gap-2">
               <span className="w-4 h-4 rounded-full bg-orange-500"></span>
               <span>ADA PENGURUS</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded-full bg-slate-400"></span>
+              <span>KOSONG</span>
             </div>
           </div>
         </CardContent>
