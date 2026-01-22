@@ -35,9 +35,15 @@ export default function KecamatanMap({ selectedDPD, selectedDPC }: KecamatanMapP
     );
   };
 
-  // Filter kecamatan based on selection
+  // Filter kecamatan based on selection - ALWAYS use all 573 data points
   const filteredKecamatan = useMemo(() => {
-    let data = kecamatanData;
+    // Pastikan data ada
+    if (!kecamatanData || kecamatanData.length === 0) {
+      console.warn("kecamatanData is empty or undefined");
+      return [];
+    }
+    
+    let data = [...kecamatanData]; // Clone array untuk safety
     
     if (selectedDPD !== "all") {
       data = data.filter(k => k.kabupaten === selectedDPD);

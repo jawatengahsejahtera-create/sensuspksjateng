@@ -52,15 +52,20 @@ export default function TrackingPengurus() {
 
   const stats = getStatistics();
 
-  // Get all kabupaten list from kecamatanData
+  // Get all kabupaten list from kecamatanData - ensure sorted
   const allKabupatenList = useMemo(() => {
-    return Object.keys(kabupatenCoordinates).sort();
+    const kabList = Object.keys(kabupatenCoordinates);
+    console.log("Total kabupaten:", kabList.length); // Debug log
+    return kabList.sort();
   }, []);
 
   // Get all kecamatan based on selected kabupaten (from kecamatanData - 573 total)
   const allKecamatanList = useMemo(() => {
-    if (selectedDPD === "all") return kecamatanData;
-    return kecamatanData.filter(kec => kec.kabupaten === selectedDPD);
+    console.log("Total kecamatan in data:", kecamatanData.length); // Debug log
+    if (selectedDPD === "all") return [...kecamatanData].sort((a, b) => a.nama.localeCompare(b.nama));
+    const filtered = kecamatanData.filter(kec => kec.kabupaten === selectedDPD);
+    console.log("Filtered kecamatan for", selectedDPD, ":", filtered.length); // Debug log
+    return filtered.sort((a, b) => a.nama.localeCompare(b.nama));
   }, [selectedDPD]);
 
   // Get DPC list based on selected DPD (only those with data)
