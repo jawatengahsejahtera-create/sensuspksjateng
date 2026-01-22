@@ -117,9 +117,6 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground text-center">
                   Menampilkan data untuk <strong className="text-foreground">{selectedKabupaten}</strong> dengan 
                   Jenjang Kaderisasi <strong className="text-primary">{selectedJenjang}</strong>
-                  {selectedJenjang === "A3" && " (Kader Pemula)"}
-                  {selectedJenjang === "A4" && " (Kader Muda)"}
-                  {selectedJenjang === "A5" && " (Kader Madya)"}
                 </p>
               </CardContent>
             </Card>

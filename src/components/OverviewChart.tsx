@@ -87,13 +87,13 @@ export const OverviewChart = ({ selectedKabupaten, selectedJenjang }: OverviewCh
         : selectedJenjang === "A4" ? totalStats.totalA4 
         : totalStats.totalA5;
       return [
-        { name: `${selectedJenjang} (${selectedJenjang === "A3" ? "Kader Pemula" : selectedJenjang === "A4" ? "Kader Muda" : "Kader Madya"})`, value: jenjangValue, fill: COLORS[selectedJenjang === "A3" ? 0 : selectedJenjang === "A4" ? 1 : 2] },
+        { name: selectedJenjang, value: jenjangValue, fill: COLORS[selectedJenjang === "A3" ? 0 : selectedJenjang === "A4" ? 1 : 2] },
       ];
     }
     return [
-      { name: "A3 (Kader Pemula)", value: totalStats.totalA3, fill: COLORS[0] },
-      { name: "A4 (Kader Muda)", value: totalStats.totalA4, fill: COLORS[1] },
-      { name: "A5 (Kader Madya)", value: totalStats.totalA5, fill: COLORS[2] },
+      { name: "A3", value: totalStats.totalA3, fill: COLORS[0] },
+      { name: "A4", value: totalStats.totalA4, fill: COLORS[1] },
+      { name: "A5", value: totalStats.totalA5, fill: COLORS[2] },
     ];
   }, [totalStats, isFiltered, selectedJenjang]);
 
@@ -307,9 +307,6 @@ export const OverviewChart = ({ selectedKabupaten, selectedJenjang }: OverviewCh
           <CardContent className="py-3">
             <p className="text-sm text-center text-foreground">
               Menampilkan data untuk <strong>{selectedKabupaten}</strong> - Jenjang <strong className="text-primary">{selectedJenjang}</strong>
-              {selectedJenjang === "A3" && " (Kader Pemula)"}
-              {selectedJenjang === "A4" && " (Kader Muda)"}
-              {selectedJenjang === "A5" && " (Kader Madya)"}
             </p>
           </CardContent>
         </Card>
