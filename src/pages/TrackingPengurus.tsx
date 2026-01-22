@@ -1,8 +1,5 @@
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -18,46 +15,32 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ExternalLink } from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Search,
-  MapPin,
-  Phone,
-  User,
-  Building2,
-  Users,
-  ChevronRight,
-  ExternalLink,
-  Filter,
-} from "lucide-react";
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from "recharts";
 import {
   dpdList,
   getAllDPC,
   getAllDPRA,
   getDPCByDPD,
-  getStatusColor,
   formatWhatsAppLink,
-  generateMapsLink,
   getStatistics,
-  type DPC,
   type DPRA,
-  type Pengurus,
+  type DPC,
 } from "@/data/dpcDpraData";
 
 export default function TrackingPengurus() {
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedDPD, setSelectedDPD] = useState<string>("all");
   const [selectedDPC, setSelectedDPC] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedDPRA, setSelectedDPRA] = useState<DPRA | null>(null);
-  const [selectedDPCDetail, setSelectedDPCDetail] = useState<DPC | null>(null);
-  const [activeTab, setActiveTab] = useState("dpc");
+  const [selectedDPRA, setSelectedDPRA] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const stats = getStatistics();
 
@@ -85,155 +68,96 @@ export default function TrackingPengurus() {
       list = list.filter((dpra) => dpra.kode.startsWith(selectedDPC));
     }
 
-    if (statusFilter !== "all") {
-      list = list.filter((dpra) => dpra.statusPendataan === statusFilter);
-    }
-
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      list = list.filter(
-        (dpra) =>
-          dpra.nama.toLowerCase().includes(query) ||
-          dpra.ketua.nama.toLowerCase().includes(query) ||
-          dpra.sekretaris.nama.toLowerCase().includes(query) ||
-          dpra.bendahara.nama.toLowerCase().includes(query)
-      );
+    if (selectedDPRA !== "all") {
+      list = list.filter((dpra) => dpra.kode === selectedDPRA);
     }
 
     return list;
-  }, [selectedDPD, selectedDPC, statusFilter, searchQuery]);
+  }, [selectedDPD, selectedDPC, selectedDPRA]);
 
-  // Filter DPC list by search
-  const searchedDPCList = useMemo(() => {
-    if (!searchQuery) return filteredDPCList;
-    const query = searchQuery.toLowerCase();
-    return filteredDPCList.filter(
-      (dpc) =>
-        dpc.nama.toLowerCase().includes(query) ||
-        dpc.dpd.toLowerCase().includes(query)
-    );
-  }, [filteredDPCList, searchQuery]);
-
-  const renderPengurusInfo = (pengurus: Pengurus, role: string) => {
-    if (!pengurus.nama) {
-      return (
-        <div className="text-muted-foreground text-sm italic">
-          Data {role} belum tersedia
-        </div>
-      );
+  // Get unique DPRA list for dropdown based on current filters
+  const dpraDropdownList = useMemo(() => {
+    let list = getAllDPRA();
+    
+    if (selectedDPD !== "all") {
+      const dpd = dpdList.find((d) => d.nama === selectedDPD);
+      if (dpd) {
+        const dpcKodes = dpd.dpcList.map((dpc) => dpc.kode);
+        list = list.filter((dpra) =>
+          dpcKodes.some((kode) => dpra.kode.startsWith(kode))
+        );
+      }
     }
 
-    return (
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <User className="h-4 w-4 text-primary" />
-          <span className="font-medium">{pengurus.nama}</span>
-        </div>
-        {pengurus.noHp && (
-          <div className="flex items-center gap-2">
-            <Phone className="h-4 w-4 text-muted-foreground" />
-            <a
-              href={formatWhatsAppLink(pengurus.noHp)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline flex items-center gap-1"
-            >
-              {pengurus.noHp}
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          </div>
-        )}
-        {pengurus.alamat && (
-          <div className="flex items-start gap-2">
-            <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-            <span className="text-sm text-muted-foreground">{pengurus.alamat}</span>
-          </div>
-        )}
-      </div>
-    );
+    if (selectedDPC !== "all") {
+      list = list.filter((dpra) => dpra.kode.startsWith(selectedDPC));
+    }
+
+    return list;
+  }, [selectedDPD, selectedDPC]);
+
+  // Pie chart data
+  const pieData = useMemo(() => {
+    const kosong = filteredDPRAList.filter(d => d.statusPendataan === "Kosong").length;
+    const adaPengurus = filteredDPRAList.filter(d => d.statusPendataan !== "Kosong").length;
+    
+    return [
+      { name: "KOSONG", value: kosong, color: "#3b82f6" },
+      { name: "ADA PENGURUS", value: adaPengurus, color: "#f97316" },
+    ];
+  }, [filteredDPRAList]);
+
+  // Calculate percentages for pie chart
+  const total = pieData[0].value + pieData[1].value;
+  const kosongPercentage = total > 0 ? ((pieData[0].value / total) * 100).toFixed(1) : "0";
+  const adaPengurusPercentage = total > 0 ? ((pieData[1].value / total) * 100).toFixed(1) : "0";
+
+  // Get parent DPC and DPD info for each DPRA
+  const getDPRAParentInfo = (dpra: DPRA) => {
+    for (const dpd of dpdList) {
+      for (const dpc of dpd.dpcList) {
+        if (dpra.kode.startsWith(dpc.kode)) {
+          return { dpd: dpd.nama, dpc: dpc.nama };
+        }
+      }
+    }
+    return { dpd: "-", dpc: "-" };
   };
+
+  // Pagination
+  const totalPages = Math.ceil(filteredDPRAList.length / itemsPerPage);
+  const paginatedData = filteredDPRAList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Google Maps embed URL for Jawa Tengah with markers
+  const mapEmbedUrl = useMemo(() => {
+    // Create a basic map centered on Jawa Tengah
+    return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2027587.0076538483!2d108.92039547500002!3d-7.150975!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e708b3d02c80c5b%3A0x9a20b547dcfbde00!2sJawa%20Tengah!5e0!3m2!1sid!2sid!4v1705000000000!5m2!1sid!2sid`;
+  }, []);
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">
-          Tracking Pengurus DPC & DPRA
-        </h1>
-        <p className="text-muted-foreground">
-          Data pengurus PKS tingkat Kecamatan (DPC) dan Kelurahan/Desa (DPRA)
-          Jawa Tengah
-        </p>
-      </div>
-
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-        <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
-          <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-primary">{stats.totalDPD}</div>
-            <p className="text-xs text-muted-foreground">Kab/Kota</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5">
-          <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-blue-600">{stats.totalDPC}</div>
-            <p className="text-xs text-muted-foreground">DPC (Kecamatan)</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5">
-          <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-purple-600">{stats.totalDPRA}</div>
-            <p className="text-xs text-muted-foreground">DPRA (Kel/Desa)</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5">
-          <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-green-600">{stats.terisiPenuh}</div>
-            <p className="text-xs text-muted-foreground">Terisi Penuh</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5">
-          <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-yellow-600">{stats.sebagianTerisi}</div>
-            <p className="text-xs text-muted-foreground">Sebagian Terisi</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-red-500/10 to-red-500/5">
-          <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-red-600">{stats.kosong}</div>
-            <p className="text-xs text-muted-foreground">Kosong</p>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5">
-          <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-emerald-600">{stats.persentaseTerisi}%</div>
-            <p className="text-xs text-muted-foreground">Terisi</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Cari nama kecamatan, kelurahan, atau pengurus..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select value={selectedDPD} onValueChange={(val) => {
-              setSelectedDPD(val);
-              setSelectedDPC("all");
-            }}>
-              <SelectTrigger className="w-full md:w-[200px]">
-                <SelectValue placeholder="Pilih Kabupaten/Kota" />
+      {/* Filter Section */}
+      <Card className="border-none shadow-none bg-transparent">
+        <CardContent className="p-0">
+          <h2 className="text-lg font-semibold mb-4 text-foreground">FILTER PENCARIAN</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Select 
+              value={selectedDPD} 
+              onValueChange={(val) => {
+                setSelectedDPD(val);
+                setSelectedDPC("all");
+                setSelectedDPRA("all");
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="w-full bg-background">
+                <SelectValue placeholder="Kabupaten/Kota" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Semua Kab/Kota</SelectItem>
+                <SelectItem value="all">Semua Kabupaten/Kota</SelectItem>
                 {dpdList.map((dpd) => (
                   <SelectItem key={dpd.kode} value={dpd.nama}>
                     {dpd.nama}
@@ -241,9 +165,17 @@ export default function TrackingPengurus() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={selectedDPC} onValueChange={setSelectedDPC}>
-              <SelectTrigger className="w-full md:w-[200px]">
-                <SelectValue placeholder="Pilih Kecamatan" />
+
+            <Select 
+              value={selectedDPC} 
+              onValueChange={(val) => {
+                setSelectedDPC(val);
+                setSelectedDPRA("all");
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="w-full bg-background">
+                <SelectValue placeholder="Kecamatan" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Kecamatan</SelectItem>
@@ -254,351 +186,236 @@ export default function TrackingPengurus() {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full md:w-[180px]">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Status" />
+
+            <Select 
+              value={selectedDPRA} 
+              onValueChange={(val) => {
+                setSelectedDPRA(val);
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="w-full bg-background">
+                <SelectValue placeholder="Desa" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="Terisi Penuh">Terisi Penuh</SelectItem>
-                <SelectItem value="Sebagian Terisi">Sebagian Terisi</SelectItem>
-                <SelectItem value="Kosong">Kosong</SelectItem>
+                <SelectItem value="all">Semua Desa</SelectItem>
+                {dpraDropdownList.map((dpra) => (
+                  <SelectItem key={dpra.kode} value={dpra.kode}>
+                    {dpra.nama}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </CardContent>
       </Card>
 
-      {/* Tabs for DPC and DPRA */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="dpc" className="gap-2">
-            <Building2 className="h-4 w-4" />
-            DPC (Kecamatan)
-          </TabsTrigger>
-          <TabsTrigger value="dpra" className="gap-2">
-            <Users className="h-4 w-4" />
-            DPRA (Kel/Desa)
-          </TabsTrigger>
-        </TabsList>
+      {/* Stats Section with Pie Chart and Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Pie Chart */}
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+              PRESENTASE JUMLAH RANTING
+            </h3>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={0}
+                    outerRadius={100}
+                    paddingAngle={0}
+                    dataKey="value"
+                    label={({ name, percent }) => `${(percent * 100).toFixed(1)}%`}
+                    labelLine={false}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value: number, name: string) => [value, name]}
+                  />
+                  <Legend 
+                    verticalAlign="bottom" 
+                    height={36}
+                    formatter={(value) => <span className="text-sm">{value}</span>}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* DPC Tab */}
-        <TabsContent value="dpc">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-primary" />
-                Daftar DPC (Tingkat Kecamatan)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[60px]">No</TableHead>
-                      <TableHead>Kode</TableHead>
-                      <TableHead>Nama Kecamatan</TableHead>
-                      <TableHead>Kabupaten/Kota</TableHead>
-                      <TableHead>Jumlah DPRA</TableHead>
-                      <TableHead className="text-right">Aksi</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {searchedDPCList.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
-                          Tidak ada data yang ditemukan
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      searchedDPCList.map((dpc, index) => (
-                        <TableRow key={dpc.kode} className="cursor-pointer hover:bg-muted/50">
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell className="font-mono text-xs">{dpc.kode}</TableCell>
-                          <TableCell className="font-medium">{dpc.nama}</TableCell>
-                          <TableCell>{dpc.dpd}</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary">{dpc.dpraList.length} DPRA</Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setSelectedDPCDetail(dpc)}
-                              >
-                                Detail
-                                <ChevronRight className="h-4 w-4 ml-1" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                asChild
-                              >
-                                <a
-                                  href={generateMapsLink(dpc.koordinat, dpc.nama + ", " + dpc.dpd)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  <MapPin className="h-4 w-4" />
-                                </a>
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+        {/* Stats Cards */}
+        <div className="flex flex-col gap-4 justify-center">
+          <Card className="bg-orange-500 text-white">
+            <CardContent className="py-6">
+              <p className="text-sm font-medium opacity-90">JUMLAH KECAMATAN</p>
+              <p className="text-4xl font-bold">{stats.totalDPC}</p>
             </CardContent>
           </Card>
-        </TabsContent>
+          <Card className="bg-orange-500 text-white">
+            <CardContent className="py-6">
+              <p className="text-sm font-medium opacity-90">JUMLAH DESA</p>
+              <p className="text-4xl font-bold">{stats.totalDPRA.toLocaleString('id-ID')}</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-orange-500 text-white">
+            <CardContent className="py-6">
+              <p className="text-sm font-medium opacity-90">JUMLAH RANTING</p>
+              <p className="text-4xl font-bold">{stats.terisiPenuh + stats.sebagianTerisi}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
-        {/* DPRA Tab */}
-        <TabsContent value="dpra">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                Daftar DPRA (Tingkat Kelurahan/Desa)
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[60px]">No</TableHead>
-                      <TableHead>Kode</TableHead>
-                      <TableHead>Nama Kel/Desa</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Ketua</TableHead>
-                      <TableHead>No. HP Ketua</TableHead>
-                      <TableHead className="text-right">Aksi</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredDPRAList.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                          Tidak ada data yang ditemukan
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      filteredDPRAList.slice(0, 100).map((dpra, index) => (
-                        <TableRow key={dpra.kode} className="cursor-pointer hover:bg-muted/50">
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell className="font-mono text-xs">{dpra.kode}</TableCell>
-                          <TableCell className="font-medium">{dpra.nama}</TableCell>
-                          <TableCell>
-                            <Badge className={getStatusColor(dpra.statusPendataan)} variant="outline">
-                              {dpra.statusPendataan}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{dpra.ketua.nama || "-"}</TableCell>
-                          <TableCell>
-                            {dpra.ketua.noHp ? (
-                              <a
-                                href={formatWhatsAppLink(dpra.ketua.noHp)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline flex items-center gap-1"
-                              >
-                                {dpra.ketua.noHp}
-                                <ExternalLink className="h-3 w-3" />
-                              </a>
-                            ) : (
-                              "-"
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setSelectedDPRA(dpra)}
+      {/* Table Section */}
+      <Card>
+        <CardContent className="pt-6">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+            TABEL DATA PENGURUS RANTING
+          </h3>
+          <div className="rounded-md border overflow-x-auto">
+            <Table>
+              <TableHeader className="bg-orange-500">
+                <TableRow>
+                  <TableHead className="text-white font-semibold w-[50px]">#</TableHead>
+                  <TableHead className="text-white font-semibold">Kabupaten/Kota</TableHead>
+                  <TableHead className="text-white font-semibold">Kecamatan</TableHead>
+                  <TableHead className="text-white font-semibold">Desa</TableHead>
+                  <TableHead className="text-white font-semibold">Nama Ketua</TableHead>
+                  <TableHead className="text-white font-semibold">No WA Ketua</TableHead>
+                  <TableHead className="text-white font-semibold">Status Data</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paginatedData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      Tidak ada data yang ditemukan
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedData.map((dpra, index) => {
+                    const parentInfo = getDPRAParentInfo(dpra);
+                    return (
+                      <TableRow key={dpra.kode} className="hover:bg-muted/50">
+                        <TableCell>{(currentPage - 1) * itemsPerPage + index + 1}.</TableCell>
+                        <TableCell>{parentInfo.dpd}</TableCell>
+                        <TableCell>{parentInfo.dpc}</TableCell>
+                        <TableCell>{dpra.nama}</TableCell>
+                        <TableCell>{dpra.ketua.nama || <span className="text-muted-foreground">null</span>}</TableCell>
+                        <TableCell>
+                          {dpra.ketua.noHp ? (
+                            <a
+                              href={formatWhatsAppLink(dpra.ketua.noHp)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline flex items-center gap-1"
                             >
-                              Detail
-                              <ChevronRight className="h-4 w-4 ml-1" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-              {filteredDPRAList.length > 100 && (
-                <p className="text-sm text-muted-foreground mt-4 text-center">
-                  Menampilkan 100 dari {filteredDPRAList.length} data. Gunakan filter untuk mempersempit pencarian.
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      {/* DPRA Detail Dialog */}
-      <Dialog open={!!selectedDPRA} onOpenChange={() => setSelectedDPRA(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
-              Detail DPRA {selectedDPRA?.nama}
-            </DialogTitle>
-          </DialogHeader>
-          {selectedDPRA && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">Kode</p>
-                  <p className="font-mono">{selectedDPRA.kode}</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">Status</p>
-                  <Badge className={getStatusColor(selectedDPRA.statusPendataan)} variant="outline">
-                    {selectedDPRA.statusPendataan}
-                  </Badge>
-                </div>
-                <Button
-                  variant="outline"
-                  asChild
-                >
-                  <a
-                    href={generateMapsLink("", selectedDPRA.nama + ", Jawa Tengah")}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="gap-2"
-                  >
-                    <MapPin className="h-4 w-4" />
-                    Lihat di Maps
-                  </a>
-                </Button>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-6">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-primary">Ketua</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {renderPengurusInfo(selectedDPRA.ketua, "Ketua")}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-blue-600">Sekretaris</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {renderPengurusInfo(selectedDPRA.sekretaris, "Sekretaris")}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-green-600">Bendahara</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {renderPengurusInfo(selectedDPRA.bendahara, "Bendahara")}
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* DPC Detail Dialog */}
-      <Dialog open={!!selectedDPCDetail} onOpenChange={() => setSelectedDPCDetail(null)}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-primary" />
-              Detail DPC {selectedDPCDetail?.nama}
-            </DialogTitle>
-          </DialogHeader>
-          {selectedDPCDetail && (
-            <div className="space-y-6">
-              <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">Kode</p>
-                  <p className="font-mono">{selectedDPCDetail.kode}</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">Kabupaten/Kota</p>
-                  <p>{selectedDPCDetail.dpd}</p>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-muted-foreground">Jumlah DPRA</p>
-                  <Badge variant="secondary">{selectedDPCDetail.dpraList.length} Kel/Desa</Badge>
-                </div>
-                <Button
-                  variant="outline"
-                  asChild
-                >
-                  <a
-                    href={generateMapsLink(selectedDPCDetail.koordinat, selectedDPCDetail.nama + ", " + selectedDPCDetail.dpd)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="gap-2"
-                  >
-                    <MapPin className="h-4 w-4" />
-                    Lihat di Maps
-                  </a>
-                </Button>
-              </div>
-
-              <div>
-                <h3 className="font-semibold mb-4">Daftar DPRA di Kecamatan {selectedDPCDetail.nama}</h3>
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>No</TableHead>
-                        <TableHead>Nama Kel/Desa</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Ketua</TableHead>
-                        <TableHead>No. HP</TableHead>
+                              {dpra.ketua.noHp}
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          ) : (
+                            <span className="text-muted-foreground">null</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${
+                            dpra.statusPendataan === "Terisi Penuh" 
+                              ? "bg-orange-500 text-white" 
+                              : dpra.statusPendataan === "Sebagian Terisi"
+                              ? "bg-orange-500 text-white"
+                              : "bg-muted text-muted-foreground"
+                          }`}>
+                            {dpra.statusPendataan === "Terisi Penuh" || dpra.statusPendataan === "Sebagian Terisi"
+                              ? "ADA PENGURUS"
+                              : "KOSONG"}
+                          </span>
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {selectedDPCDetail.dpraList.map((dpra, index) => (
-                        <TableRow key={dpra.kode}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell className="font-medium">{dpra.nama}</TableCell>
-                          <TableCell>
-                            <Badge className={getStatusColor(dpra.statusPendataan)} variant="outline">
-                              {dpra.statusPendataan}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>{dpra.ketua.nama || "-"}</TableCell>
-                          <TableCell>
-                            {dpra.ketua.noHp ? (
-                              <a
-                                href={formatWhatsAppLink(dpra.ketua.noHp)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline"
-                              >
-                                {dpra.ketua.noHp}
-                              </a>
-                            ) : (
-                              "-"
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-end gap-2 mt-4">
+              <span className="text-sm text-muted-foreground">
+                {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredDPRAList.length)} / {filteredDPRAList.length}
+              </span>
+              <div className="flex gap-1">
+                <button
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
+                >
+                  «
+                </button>
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
+                >
+                  ‹
+                </button>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
+                >
+                  ›
+                </button>
+                <button
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
+                >
+                  »
+                </button>
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+        </CardContent>
+      </Card>
+
+      {/* Map Section */}
+      <Card>
+        <CardContent className="pt-6">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+            PETA LOKASI PENGURUS
+          </h3>
+          <div className="w-full h-[400px] rounded-md overflow-hidden border">
+            <iframe
+              src={mapEmbedUrl}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Peta Lokasi Pengurus PKS Jawa Tengah"
+            />
+          </div>
+          <div className="flex items-center gap-4 mt-4 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded-full bg-blue-500"></span>
+              <span>KOSONG</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded-full bg-orange-500"></span>
+              <span>ADA PENGURUS</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
