@@ -39,6 +39,7 @@ import {
   type DPRA,
   type DPC,
 } from "@/data/dpcDpraData";
+import { kecamatanData, kabupatenCoordinates } from "@/data/kecamatanCoordinates";
 import KecamatanMap from "@/components/KecamatanMap";
 
 export default function TrackingPengurus() {
@@ -50,7 +51,18 @@ export default function TrackingPengurus() {
 
   const stats = getStatistics();
 
-  // Get DPC list based on selected DPD
+  // Get all kabupaten list from kecamatanData
+  const allKabupatenList = useMemo(() => {
+    return Object.keys(kabupatenCoordinates).sort();
+  }, []);
+
+  // Get all kecamatan based on selected kabupaten (from kecamatanData - 573 total)
+  const allKecamatanList = useMemo(() => {
+    if (selectedDPD === "all") return kecamatanData;
+    return kecamatanData.filter(kec => kec.kabupaten === selectedDPD);
+  }, [selectedDPD]);
+
+  // Get DPC list based on selected DPD (only those with data)
   const filteredDPCList = useMemo(() => {
     if (selectedDPD === "all") return getAllDPC();
     return getDPCByDPD(selectedDPD);
@@ -81,11 +93,13 @@ export default function TrackingPengurus() {
     return list;
   }, [selectedDPD, selectedDPC, selectedDPRA]);
 
-  // Get unique DPRA list for dropdown based on current filters
+  // Get unique DPRA list for dropdown based on selected kecamatan
   const dpraDropdownList = useMemo(() => {
     let list = getAllDPRA();
     
-    if (selectedDPD !== "all") {
+    if (selectedDPC !== "all") {
+      list = list.filter((dpra) => dpra.kode.startsWith(selectedDPC));
+    } else if (selectedDPD !== "all") {
       const dpd = dpdList.find((d) => d.nama === selectedDPD);
       if (dpd) {
         const dpcKodes = dpd.dpcList.map((dpc) => dpc.kode);
@@ -93,10 +107,6 @@ export default function TrackingPengurus() {
           dpcKodes.some((kode) => dpra.kode.startsWith(kode))
         );
       }
-    }
-
-    if (selectedDPC !== "all") {
-      list = list.filter((dpra) => dpra.kode.startsWith(selectedDPC));
     }
 
     return list;
@@ -351,11 +361,11 @@ export default function TrackingPengurus() {
                 <SelectTrigger className="w-full bg-background">
                   <SelectValue placeholder="Pilih Kabupaten/Kota" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   <SelectItem value="all">Semua Kabupaten/Kota</SelectItem>
-                  {dpdList.map((dpd) => (
-                    <SelectItem key={dpd.kode} value={dpd.nama}>
-                      {dpd.nama}
+                  {allKabupatenList.map((kab) => (
+                    <SelectItem key={kab} value={kab}>
+                      {kab}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -376,11 +386,11 @@ export default function TrackingPengurus() {
                 <SelectTrigger className={`w-full bg-background ${selectedDPD === "all" ? "opacity-50" : ""}`}>
                   <SelectValue placeholder={selectedDPD === "all" ? "Pilih Kabupaten dahulu" : "Pilih Kecamatan"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   <SelectItem value="all">Semua Kecamatan</SelectItem>
-                  {filteredDPCList.map((dpc) => (
-                    <SelectItem key={dpc.kode} value={dpc.kode}>
-                      {dpc.nama}
+                  {allKecamatanList.map((kec) => (
+                    <SelectItem key={kec.kode} value={kec.kode}>
+                      {kec.nama}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -400,7 +410,7 @@ export default function TrackingPengurus() {
                 <SelectTrigger className={`w-full bg-background ${selectedDPC === "all" ? "opacity-50" : ""}`}>
                   <SelectValue placeholder={selectedDPC === "all" ? "Pilih Kecamatan dahulu" : "Pilih Desa/Kelurahan"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-[300px]">
                   <SelectItem value="all">Semua Desa/Kelurahan</SelectItem>
                   {dpraDropdownList.map((dpra) => (
                     <SelectItem key={dpra.kode} value={dpra.kode}>
