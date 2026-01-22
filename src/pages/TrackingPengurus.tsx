@@ -39,6 +39,7 @@ import {
   type DPRA,
   type DPC,
 } from "@/data/dpcDpraData";
+import KecamatanMap from "@/components/KecamatanMap";
 
 export default function TrackingPengurus() {
   const [selectedDPD, setSelectedDPD] = useState<string>("all");
@@ -519,30 +520,9 @@ export default function TrackingPengurus() {
       <Card>
         <CardContent className="pt-6">
           <h3 className="text-sm font-semibold text-muted-foreground mb-4">
-            PETA LOKASI PENGURUS
+            PETA LOKASI KECAMATAN - 573 TITIK
           </h3>
-          <div className="w-full h-[400px] rounded-md overflow-hidden border">
-            <iframe
-              src={mapEmbedUrl}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Peta Lokasi Pengurus PKS Jawa Tengah"
-            />
-          </div>
-          <div className="flex items-center gap-4 mt-4 text-sm">
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded-full bg-orange-500"></span>
-              <span>ADA PENGURUS</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded-full bg-slate-400"></span>
-              <span>KOSONG</span>
-            </div>
-          </div>
+          <KecamatanMap selectedDPD={selectedDPD} selectedDPC={selectedDPC} />
         </CardContent>
       </Card>
     </div>
