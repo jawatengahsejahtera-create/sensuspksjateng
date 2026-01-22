@@ -39,6 +39,7 @@ import {
   type DPRA,
   type DPC,
 } from "@/data/dpcDpraData";
+import KecamatanMap from "@/components/KecamatanMap";
 
 export default function TrackingPengurus() {
   const [selectedDPD, setSelectedDPD] = useState<string>("all");
