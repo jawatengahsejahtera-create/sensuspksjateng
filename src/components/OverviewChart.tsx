@@ -313,7 +313,7 @@ export const OverviewChart = ({ selectedKabupaten, selectedJenjang }: OverviewCh
       )}
 
       {/* Summary Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card className="shadow-card bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
@@ -321,24 +321,50 @@ export const OverviewChart = ({ selectedKabupaten, selectedJenjang }: OverviewCh
                 <Users className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{isFiltered ? `Total Anggota ${selectedJenjang}` : "Total Anggota"}</p>
+                <p className="text-sm text-muted-foreground">{isFiltered ? `Total ${selectedJenjang}` : "Total Anggota"}</p>
                 <p className="text-2xl font-bold text-foreground">{totalStats.totalAnggota.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-card bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
+        <Card className="shadow-card bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/20">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-full bg-accent/20">
-                <UserCheck className="w-6 h-6 text-accent-foreground" />
+              <div className="p-3 rounded-full bg-red-500/20">
+                <UserCheck className="w-6 h-6 text-red-600" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">{isFiltered ? "Kabupaten" : "Kader Madya (A5)"}</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {isFiltered ? selectedKabupaten?.replace("KAB. ", "").replace("KOTA ", "") : totalStats.totalA5.toLocaleString()}
-                </p>
+                <p className="text-sm text-muted-foreground">Kader A3</p>
+                <p className="text-2xl font-bold text-foreground">{totalStats.totalA3.toLocaleString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-card bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-full bg-green-500/20">
+                <UserCheck className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Kader A4</p>
+                <p className="text-2xl font-bold text-foreground">{totalStats.totalA4.toLocaleString()}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-card bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
+          <CardContent className="pt-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-full bg-blue-500/20">
+                <UserCheck className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Kader A5</p>
+                <p className="text-2xl font-bold text-foreground">{totalStats.totalA5.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
