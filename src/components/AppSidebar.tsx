@@ -20,8 +20,10 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Badge } from "@/components/ui/badge";
 
-const menuItems = [
+// Menu items for superadmin (full access)
+const fullMenuItems = [
   { 
     title: "Sensus Data Anggota", 
     url: "/", 
@@ -39,6 +41,16 @@ const menuItems = [
     url: "/tracking-pengurus", 
     icon: Building2,
     description: "Data pengurus tingkat Kecamatan & Desa"
+  },
+];
+
+// Menu items for bidang users (RKRAT only)
+const bidangUserMenuItems = [
+  { 
+    title: "RKRAT", 
+    url: "/rkrat", 
+    icon: Calendar,
+    description: "Rencana Kerja & Anggaran Tahunan"
   },
 ];
 
@@ -62,23 +74,47 @@ export function AppSidebar() {
   const { user, signOut } = useAuth();
   const collapsed = state === "collapsed";
   const [isSuperadmin, setIsSuperadmin] = useState(false);
+  const [userBidang, setUserBidang] = useState<{ name: string } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkSuperadmin = async () => {
-      if (!user) return;
+    const checkUserAccess = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
       
-      const { data } = await supabase
+      // Check if superadmin
+      const { data: roleData } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", user.id)
         .eq("role", "superadmin")
         .maybeSingle();
       
-      setIsSuperadmin(data?.role === "superadmin");
+      setIsSuperadmin(roleData?.role === "superadmin");
+
+      // Check if user has bidang assignment
+      const { data: bidangData } = await supabase
+        .from("user_bidang")
+        .select(`
+          bidang:bidang_id (name)
+        `)
+        .eq("user_id", user.id)
+        .maybeSingle();
+      
+      if (bidangData?.bidang) {
+        setUserBidang(bidangData.bidang as { name: string });
+      }
+      
+      setLoading(false);
     };
     
-    checkSuperadmin();
+    checkUserAccess();
   }, [user]);
+
+  // Determine which menu items to show
+  const menuItems = isSuperadmin ? fullMenuItems : (userBidang ? bidangUserMenuItems : fullMenuItems);
 
   return (
     <Sidebar className="border-r border-border bg-card">
@@ -99,6 +135,15 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-2 py-4">
+        {/* User Bidang Badge */}
+        {!collapsed && userBidang && !isSuperadmin && (
+          <div className="px-2 mb-4">
+            <Badge variant="secondary" className="w-full justify-center py-1.5 text-xs">
+              {userBidang.name}
+            </Badge>
+          </div>
+        )}
+
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-2">
             {!collapsed && "Menu Utama"}
