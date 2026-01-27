@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calendar, Users, LogOut, Building2, UserCheck } from "lucide-react";
+import { Calendar, Users, LogOut, Building2, UserCheck, FileCheck } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,12 @@ const adminMenuItems = [
     url: "/admin/approvals", 
     icon: UserCheck,
     description: "Kelola persetujuan pendaftaran user"
+  },
+  { 
+    title: "Persetujuan RKRAT", 
+    url: "/admin/rkrat-approvals", 
+    icon: FileCheck,
+    description: "Setujui pengajuan kegiatan bidang"
   },
 ];
 
