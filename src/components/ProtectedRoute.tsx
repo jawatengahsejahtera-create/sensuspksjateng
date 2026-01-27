@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ProtectedRouteProps {
@@ -16,6 +17,9 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [accessLoading, setAccessLoading] = useState(true);
   const [isSuperadmin, setIsSuperadmin] = useState(false);
   const [hasBidang, setHasBidang] = useState(false);
+  
+  // Initialize session timeout - auto logout after 30 minutes of inactivity
+  useSessionTimeout();
 
   useEffect(() => {
     const checkAccess = async () => {
