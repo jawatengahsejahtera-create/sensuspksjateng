@@ -14,6 +14,171 @@ export type Database = {
   }
   public: {
     Tables: {
+      bidang: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      rkrat_entries: {
+        Row: {
+          anggaran: number
+          approved_at: string | null
+          approved_by: string | null
+          bidang_id: string
+          created_at: string
+          fokus: string | null
+          id: string
+          jadwal_apr: boolean | null
+          jadwal_aug: boolean | null
+          jadwal_dec: boolean | null
+          jadwal_feb: boolean | null
+          jadwal_jan: boolean | null
+          jadwal_jul: boolean | null
+          jadwal_jun: boolean | null
+          jadwal_mar: boolean | null
+          jadwal_may: boolean | null
+          jadwal_nov: boolean | null
+          jadwal_oct: boolean | null
+          jadwal_sep: boolean | null
+          kegiatan_utama: string
+          outcome: string | null
+          period_id: string
+          program_unggulan: string
+          rejection_reason: string | null
+          status: string
+          submitted_at: string
+          submitted_by: string
+          target: string | null
+          tema_utama: string
+          updated_at: string
+        }
+        Insert: {
+          anggaran?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          bidang_id: string
+          created_at?: string
+          fokus?: string | null
+          id?: string
+          jadwal_apr?: boolean | null
+          jadwal_aug?: boolean | null
+          jadwal_dec?: boolean | null
+          jadwal_feb?: boolean | null
+          jadwal_jan?: boolean | null
+          jadwal_jul?: boolean | null
+          jadwal_jun?: boolean | null
+          jadwal_mar?: boolean | null
+          jadwal_may?: boolean | null
+          jadwal_nov?: boolean | null
+          jadwal_oct?: boolean | null
+          jadwal_sep?: boolean | null
+          kegiatan_utama: string
+          outcome?: string | null
+          period_id: string
+          program_unggulan: string
+          rejection_reason?: string | null
+          status?: string
+          submitted_at?: string
+          submitted_by: string
+          target?: string | null
+          tema_utama: string
+          updated_at?: string
+        }
+        Update: {
+          anggaran?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          bidang_id?: string
+          created_at?: string
+          fokus?: string | null
+          id?: string
+          jadwal_apr?: boolean | null
+          jadwal_aug?: boolean | null
+          jadwal_dec?: boolean | null
+          jadwal_feb?: boolean | null
+          jadwal_jan?: boolean | null
+          jadwal_jul?: boolean | null
+          jadwal_jun?: boolean | null
+          jadwal_mar?: boolean | null
+          jadwal_may?: boolean | null
+          jadwal_nov?: boolean | null
+          jadwal_oct?: boolean | null
+          jadwal_sep?: boolean | null
+          kegiatan_utama?: string
+          outcome?: string | null
+          period_id?: string
+          program_unggulan?: string
+          rejection_reason?: string | null
+          status?: string
+          submitted_at?: string
+          submitted_by?: string
+          target?: string | null
+          tema_utama?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rkrat_entries_bidang_id_fkey"
+            columns: ["bidang_id"]
+            isOneToOne: false
+            referencedRelation: "bidang"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rkrat_entries_period_id_fkey"
+            columns: ["period_id"]
+            isOneToOne: false
+            referencedRelation: "rkrat_periods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rkrat_periods: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          is_active: boolean
+          start_date: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          is_active?: boolean
+          start_date: string
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          start_date?: string
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
       user_approvals: {
         Row: {
           approved_at: string | null
@@ -47,6 +212,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_bidang: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          bidang_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          bidang_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          bidang_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_bidang_bidang_id_fkey"
+            columns: ["bidang_id"]
+            isOneToOne: false
+            referencedRelation: "bidang"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -73,6 +270,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_bidang: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

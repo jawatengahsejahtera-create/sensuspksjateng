@@ -3,18 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, Clock, Users, UserCheck, UserX } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CheckCircle, XCircle, Clock, Users, UserCheck, UserX, Building2, Link } from "lucide-react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import { useBidangList, useUserBidangMutations, useAllUserBidang } from "@/hooks/useRKRAT";
 
 interface UserApproval {
   id: string;
@@ -30,6 +26,11 @@ const AdminApprovals = () => {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const { toast } = useToast();
+  const { bidangList } = useBidangList();
+  const { assignments, refetch: refetchAssignments } = useAllUserBidang();
+  const { assignUserToBidang, loading: assignLoading } = useUserBidangMutations();
+
+  const [selectedBidang, setSelectedBidang] = useState<Record<string, string>>({});
 
   const fetchApprovals = async () => {
     try {
@@ -88,6 +89,37 @@ const AdminApprovals = () => {
     }
   };
 
+  const handleAssignBidang = async (userId: string) => {
+    const bidangId = selectedBidang[userId];
+    if (!bidangId) {
+      toast({
+        title: "Error",
+        description: "Pilih bidang terlebih dahulu",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await assignUserToBidang(userId, bidangId);
+      toast({
+        title: "Berhasil",
+        description: "User berhasil ditugaskan ke bidang",
+      });
+      refetchAssignments();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Gagal menugaskan user",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getUserBidang = (userId: string) => {
+    return assignments.find(a => a.user_id === userId);
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
@@ -119,13 +151,14 @@ const AdminApprovals = () => {
   const pendingCount = approvals.filter((a) => a.status === "pending").length;
   const approvedCount = approvals.filter((a) => a.status === "approved").length;
   const rejectedCount = approvals.filter((a) => a.status === "rejected").length;
+  const approvedUsers = approvals.filter((a) => a.status === "approved");
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Manajemen Persetujuan User</h1>
+        <h1 className="text-2xl font-bold text-foreground">Manajemen User</h1>
         <p className="text-muted-foreground">
-          Kelola permintaan pendaftaran user baru
+          Kelola persetujuan user dan penugasan bidang
         </p>
       </div>
 
@@ -173,106 +206,189 @@ const AdminApprovals = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-red-100 rounded-lg">
-                <UserX className="w-6 h-6 text-red-600" />
+              <div className="p-3 bg-primary/10 rounded-lg">
+                <Building2 className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Ditolak</p>
-                <p className="text-2xl font-bold">{rejectedCount}</p>
+                <p className="text-sm text-muted-foreground">Total Bidang</p>
+                <p className="text-2xl font-bold">{bidangList.length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Approvals Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Daftar Permintaan Pendaftaran</CardTitle>
-          <CardDescription>
-            User yang mendaftar harus disetujui oleh superadmin sebelum dapat login
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          ) : approvals.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              Belum ada permintaan pendaftaran
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Tanggal Daftar</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Tanggal Approval</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {approvals.map((approval) => (
-                  <TableRow key={approval.id}>
-                    <TableCell className="font-medium">{approval.email}</TableCell>
-                    <TableCell>
-                      {format(new Date(approval.created_at), "dd MMM yyyy, HH:mm", {
-                        locale: id,
-                      })}
-                    </TableCell>
-                    <TableCell>{getStatusBadge(approval.status)}</TableCell>
-                    <TableCell>
-                      {approval.approved_at
-                        ? format(new Date(approval.approved_at), "dd MMM yyyy, HH:mm", {
+      <Tabs defaultValue="approvals" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="approvals">Persetujuan User</TabsTrigger>
+          <TabsTrigger value="bidang">Penugasan Bidang</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="approvals">
+          <Card>
+            <CardHeader>
+              <CardTitle>Daftar Permintaan Pendaftaran</CardTitle>
+              <CardDescription>
+                User yang mendaftar harus disetujui oleh superadmin sebelum dapat login
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : approvals.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Belum ada permintaan pendaftaran
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Tanggal Daftar</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Tanggal Approval</TableHead>
+                      <TableHead className="text-right">Aksi</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {approvals.map((approval) => (
+                      <TableRow key={approval.id}>
+                        <TableCell className="font-medium">{approval.email}</TableCell>
+                        <TableCell>
+                          {format(new Date(approval.created_at), "dd MMM yyyy, HH:mm", {
                             locale: id,
-                          })
-                        : "-"}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {approval.status === "pending" && (
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                            onClick={() => handleApproval(approval.user_id, "approved")}
-                            disabled={actionLoading === approval.user_id}
-                          >
-                            <CheckCircle className="w-4 h-4 mr-1" />
-                            Setujui
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => handleApproval(approval.user_id, "rejected")}
-                            disabled={actionLoading === approval.user_id}
-                          >
-                            <XCircle className="w-4 h-4 mr-1" />
-                            Tolak
-                          </Button>
-                        </div>
-                      )}
-                      {approval.status !== "pending" && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => handleApproval(approval.user_id, "pending" as any)}
-                          disabled={actionLoading === approval.user_id}
-                        >
-                          Reset
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                          })}
+                        </TableCell>
+                        <TableCell>{getStatusBadge(approval.status)}</TableCell>
+                        <TableCell>
+                          {approval.approved_at
+                            ? format(new Date(approval.approved_at), "dd MMM yyyy, HH:mm", {
+                                locale: id,
+                              })
+                            : "-"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {approval.status === "pending" && (
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                onClick={() => handleApproval(approval.user_id, "approved")}
+                                disabled={actionLoading === approval.user_id}
+                              >
+                                <CheckCircle className="w-4 h-4 mr-1" />
+                                Setujui
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => handleApproval(approval.user_id, "rejected")}
+                                disabled={actionLoading === approval.user_id}
+                              >
+                                <XCircle className="w-4 h-4 mr-1" />
+                                Tolak
+                              </Button>
+                            </div>
+                          )}
+                          {approval.status !== "pending" && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleApproval(approval.user_id, "pending" as any)}
+                              disabled={actionLoading === approval.user_id}
+                            >
+                              Reset
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="bidang">
+          <Card>
+            <CardHeader>
+              <CardTitle>Penugasan User ke Bidang</CardTitle>
+              <CardDescription>
+                Tugaskan user yang sudah disetujui ke bidang tertentu untuk dapat menginput RKRAT
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {approvedUsers.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  Belum ada user yang disetujui
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Bidang Saat Ini</TableHead>
+                      <TableHead>Pilih Bidang</TableHead>
+                      <TableHead className="text-right">Aksi</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {approvedUsers.map((user) => {
+                      const currentBidang = getUserBidang(user.user_id);
+                      return (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">{user.email}</TableCell>
+                          <TableCell>
+                            {currentBidang?.bidang ? (
+                              <Badge variant="secondary">{currentBidang.bidang.name}</Badge>
+                            ) : (
+                              <span className="text-muted-foreground text-sm">Belum ditugaskan</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Select
+                              value={selectedBidang[user.user_id] || ""}
+                              onValueChange={(value) =>
+                                setSelectedBidang((prev) => ({ ...prev, [user.user_id]: value }))
+                              }
+                            >
+                              <SelectTrigger className="w-[250px]">
+                                <SelectValue placeholder="Pilih bidang" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {bidangList.map((bidang) => (
+                                  <SelectItem key={bidang.id} value={bidang.id}>
+                                    {bidang.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              size="sm"
+                              onClick={() => handleAssignBidang(user.user_id)}
+                              disabled={assignLoading || !selectedBidang[user.user_id]}
+                            >
+                              <Link className="w-4 h-4 mr-1" />
+                              Tugaskan
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
