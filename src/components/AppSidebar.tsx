@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calendar, Users, LogOut, Building2, UserCheck, FileCheck } from "lucide-react";
+import { Calendar, Users, LogOut, Building2, UserCheck, FileCheck, Landmark } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,12 @@ const fullMenuItems = [
     url: "/tracking-pengurus", 
     icon: Building2,
     description: "Data pengurus tingkat Kecamatan & Desa"
+  },
+  { 
+    title: "Anggota Legislatif", 
+    url: "/anggota-legislatif", 
+    icon: Landmark,
+    description: "Rekap ALEG DPRD 2024-2029"
   },
 ];
 
