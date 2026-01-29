@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ExternalLink, Building2, MapPin, Users, CheckCircle } from "lucide-react";
+import { ExternalLink, Building2, MapPin, Users, CheckCircle, Phone } from "lucide-react";
 import {
   PieChart,
   Pie,
@@ -41,6 +41,11 @@ import {
 } from "@/data/dpcDpraData";
 import { kecamatanData, kabupatenCoordinates } from "@/data/kecamatanCoordinates";
 import { getDesaByKecamatan, DesaItem } from "@/data/desaData";
+import { 
+  pengurusKecamatanData, 
+  getPengurusKecamatanByKabupaten, 
+  type PengurusKecamatan 
+} from "@/data/pengurusKecamatanData";
 import KecamatanMap from "@/components/KecamatanMap";
 
 export default function TrackingPengurus() {
@@ -48,6 +53,7 @@ export default function TrackingPengurus() {
   const [selectedDPC, setSelectedDPC] = useState<string>("all");
   const [selectedDPRA, setSelectedDPRA] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPageDPC, setCurrentPageDPC] = useState(1);
   const itemsPerPage = 10;
 
   const stats = getStatistics();
@@ -55,17 +61,22 @@ export default function TrackingPengurus() {
   // Get all kabupaten list from kecamatanData - ensure sorted
   const allKabupatenList = useMemo(() => {
     const kabList = Object.keys(kabupatenCoordinates);
-    console.log("Total kabupaten:", kabList.length); // Debug log
     return kabList.sort();
   }, []);
 
   // Get all kecamatan based on selected kabupaten (from kecamatanData - 573 total)
   const allKecamatanList = useMemo(() => {
-    console.log("Total kecamatan in data:", kecamatanData.length); // Debug log
     if (selectedDPD === "all") return [...kecamatanData].sort((a, b) => a.nama.localeCompare(b.nama));
     const filtered = kecamatanData.filter(kec => kec.kabupaten === selectedDPD);
-    console.log("Filtered kecamatan for", selectedDPD, ":", filtered.length); // Debug log
     return filtered.sort((a, b) => a.nama.localeCompare(b.nama));
+  }, [selectedDPD]);
+
+  // Get DPC (Pengurus Kecamatan) list based on selected kabupaten
+  const filteredPengurusDPCList = useMemo((): PengurusKecamatan[] => {
+    if (selectedDPD === "all") {
+      return [...pengurusKecamatanData].sort((a, b) => a.kabupaten.localeCompare(b.kabupaten) || a.namaKecamatan.localeCompare(b.namaKecamatan));
+    }
+    return getPengurusKecamatanByKabupaten(selectedDPD).sort((a, b) => a.namaKecamatan.localeCompare(b.namaKecamatan));
   }, [selectedDPD]);
 
   // Get DPC list based on selected DPD (only those with data)
@@ -74,7 +85,7 @@ export default function TrackingPengurus() {
     return getDPCByDPD(selectedDPD);
   }, [selectedDPD]);
 
-  // Get DPRA list based on filters
+  // Get DPRA list based on filters - show only when kecamatan is selected
   const filteredDPRAList = useMemo(() => {
     let list = getAllDPRA();
 
@@ -177,17 +188,19 @@ export default function TrackingPengurus() {
     return { dpd: "-", dpc: "-" };
   };
 
-  // Pagination
+  // Pagination for DPRA table
   const totalPages = Math.ceil(filteredDPRAList.length / itemsPerPage);
   const paginatedData = filteredDPRAList.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  // Google Maps embed URL for Jawa Tengah with markers
-  const mapEmbedUrl = useMemo(() => {
-    return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2027587.0076538483!2d108.92039547500002!3d-7.150975!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e708b3d02c80c5b%3A0x9a20b547dcfbde00!2sJawa%20Tengah!5e0!3m2!1sid!2sid!4v1705000000000!5m2!1sid!2sid`;
-  }, []);
+  // Pagination for DPC table
+  const totalPagesDPC = Math.ceil(filteredPengurusDPCList.length / itemsPerPage);
+  const paginatedDPCData = filteredPengurusDPCList.slice(
+    (currentPageDPC - 1) * itemsPerPage,
+    currentPageDPC * itemsPerPage
+  );
 
   return (
     <div className="space-y-6">
@@ -377,12 +390,13 @@ export default function TrackingPengurus() {
                   setSelectedDPC("all");
                   setSelectedDPRA("all");
                   setCurrentPage(1);
+                  setCurrentPageDPC(1);
                 }}
               >
                 <SelectTrigger className="w-full bg-background">
                   <SelectValue placeholder="Pilih Kabupaten/Kota" />
                 </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
+                <SelectContent className="max-h-[300px] bg-popover">
                   <SelectItem value="all">Semua Kabupaten/Kota</SelectItem>
                   {allKabupatenList.map((kab) => (
                     <SelectItem key={kab} value={kab}>
@@ -407,7 +421,7 @@ export default function TrackingPengurus() {
                 <SelectTrigger className={`w-full bg-background ${selectedDPD === "all" ? "opacity-50" : ""}`}>
                   <SelectValue placeholder={selectedDPD === "all" ? "Pilih Kabupaten dahulu" : "Pilih Kecamatan"} />
                 </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
+                <SelectContent className="max-h-[300px] bg-popover">
                   <SelectItem value="all">Semua Kecamatan</SelectItem>
                   {allKecamatanList.map((kec) => (
                     <SelectItem key={kec.kode} value={kec.kode}>
@@ -431,7 +445,7 @@ export default function TrackingPengurus() {
                 <SelectTrigger className={`w-full bg-background ${selectedDPC === "all" ? "opacity-50" : ""}`}>
                   <SelectValue placeholder={selectedDPC === "all" ? "Pilih Kecamatan dahulu" : "Pilih Desa/Kelurahan"} />
                 </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
+                <SelectContent className="max-h-[300px] bg-popover">
                   <SelectItem value="all">Semua Desa/Kelurahan</SelectItem>
                   {dpraDropdownList.map((dpra) => (
                     <SelectItem key={dpra.kode} value={dpra.kode}>
@@ -445,11 +459,14 @@ export default function TrackingPengurus() {
         </CardContent>
       </Card>
 
-      {/* Table Section */}
+      {/* Table DPC (Pengurus Kecamatan) */}
       <Card>
         <CardContent className="pt-6">
           <h3 className="text-sm font-semibold text-muted-foreground mb-4">
-            TABEL DATA PENGURUS RANTING
+            TABEL DATA PENGURUS KECAMATAN (DPC)
+            {selectedDPD !== "all" && (
+              <span className="ml-2 text-primary">- {selectedDPD}</span>
+            )}
           </h3>
           <div className="rounded-md border overflow-x-auto">
             <Table>
@@ -458,96 +475,91 @@ export default function TrackingPengurus() {
                   <TableHead className="text-white font-semibold w-[50px]">#</TableHead>
                   <TableHead className="text-white font-semibold">Kabupaten/Kota</TableHead>
                   <TableHead className="text-white font-semibold">Kecamatan</TableHead>
-                  <TableHead className="text-white font-semibold">Desa</TableHead>
-                  <TableHead className="text-white font-semibold">Nama Ketua</TableHead>
-                  <TableHead className="text-white font-semibold">No WA Ketua</TableHead>
-                  <TableHead className="text-white font-semibold">Status Data</TableHead>
+                  <TableHead className="text-white font-semibold">Ketua</TableHead>
+                  <TableHead className="text-white font-semibold">No HP Ketua</TableHead>
+                  <TableHead className="text-white font-semibold">Sekretaris</TableHead>
+                  <TableHead className="text-white font-semibold">Bendahara</TableHead>
+                  <TableHead className="text-white font-semibold">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedData.length === 0 ? (
+                {paginatedDPCData.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                      Tidak ada data yang ditemukan
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      Tidak ada data pengurus kecamatan yang ditemukan
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedData.map((dpra, index) => {
-                    const parentInfo = getDPRAParentInfo(dpra);
-                    return (
-                      <TableRow key={dpra.kode} className="hover:bg-muted/50">
-                        <TableCell>{(currentPage - 1) * itemsPerPage + index + 1}.</TableCell>
-                        <TableCell>{parentInfo.dpd}</TableCell>
-                        <TableCell>{parentInfo.dpc}</TableCell>
-                        <TableCell>{dpra.nama}</TableCell>
-                        <TableCell>{dpra.ketua.nama || <span className="text-muted-foreground">-</span>}</TableCell>
-                        <TableCell>
-                          {dpra.ketua.noHp ? (
-                            <a
-                              href={formatWhatsAppLink(dpra.ketua.noHp)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary hover:underline flex items-center gap-1"
-                            >
-                              {dpra.ketua.noHp}
-                              <ExternalLink className="h-3 w-3" />
-                            </a>
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            dpra.statusPendataan === "Terisi Penuh" 
-                              ? "bg-orange-500 text-white" 
-                              : dpra.statusPendataan === "Sebagian Terisi"
-                              ? "bg-orange-500 text-white"
-                              : "bg-muted text-muted-foreground"
-                          }`}>
-                            {dpra.statusPendataan === "Terisi Penuh" || dpra.statusPendataan === "Sebagian Terisi"
-                              ? "ADA PENGURUS"
-                              : "KOSONG"}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
+                  paginatedDPCData.map((pengurus, index) => (
+                    <TableRow key={pengurus.kode} className="hover:bg-muted/50">
+                      <TableCell>{(currentPageDPC - 1) * itemsPerPage + index + 1}.</TableCell>
+                      <TableCell className="font-medium">{pengurus.kabupaten}</TableCell>
+                      <TableCell>{pengurus.namaKecamatan}</TableCell>
+                      <TableCell>{pengurus.ketua.nama || <span className="text-muted-foreground">-</span>}</TableCell>
+                      <TableCell>
+                        {pengurus.ketua.noHp ? (
+                          <a
+                            href={formatWhatsAppLink(pengurus.ketua.noHp)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline flex items-center gap-1"
+                          >
+                            <Phone className="h-3 w-3" />
+                            {pengurus.ketua.noHp}
+                          </a>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>{pengurus.sekretaris.nama || <span className="text-muted-foreground">-</span>}</TableCell>
+                      <TableCell>{pengurus.bendahara.nama || <span className="text-muted-foreground">-</span>}</TableCell>
+                      <TableCell>
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          pengurus.statusPengurus === "ADA PENGURUS" 
+                            ? "bg-orange-500 text-white" 
+                            : "bg-muted text-muted-foreground"
+                        }`}>
+                          {pengurus.statusPengurus}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
               </TableBody>
             </Table>
           </div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
+          {/* Pagination DPC */}
+          {totalPagesDPC > 1 && (
             <div className="flex items-center justify-end gap-2 mt-4">
               <span className="text-sm text-muted-foreground">
-                {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredDPRAList.length)} / {filteredDPRAList.length}
+                {(currentPageDPC - 1) * itemsPerPage + 1} - {Math.min(currentPageDPC * itemsPerPage, filteredPengurusDPCList.length)} / {filteredPengurusDPCList.length}
               </span>
               <div className="flex gap-1">
                 <button
-                  onClick={() => setCurrentPage(1)}
-                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPageDPC(1)}
+                  disabled={currentPageDPC === 1}
                   className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
                 >
                   «
                 </button>
                 <button
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPageDPC(p => Math.max(1, p - 1))}
+                  disabled={currentPageDPC === 1}
                   className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
                 >
                   ‹
                 </button>
                 <button
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPageDPC(p => Math.min(totalPagesDPC, p + 1))}
+                  disabled={currentPageDPC === totalPagesDPC}
                   className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
                 >
                   ›
                 </button>
                 <button
-                  onClick={() => setCurrentPage(totalPages)}
-                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPageDPC(totalPagesDPC)}
+                  disabled={currentPageDPC === totalPagesDPC}
                   className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
                 >
                   »
@@ -557,6 +569,138 @@ export default function TrackingPengurus() {
           )}
         </CardContent>
       </Card>
+
+      {/* Table DPRA (Pengurus Ranting) - Only show when kecamatan is selected */}
+      {selectedDPC !== "all" && (
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+              TABEL DATA PENGURUS RANTING (DPRA)
+              {selectedDPC !== "all" && (
+                <span className="ml-2 text-primary">
+                  - {allKecamatanList.find(k => k.kode === selectedDPC)?.nama || selectedDPC}
+                </span>
+              )}
+            </h3>
+            <div className="rounded-md border overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-blue-500">
+                  <TableRow>
+                    <TableHead className="text-white font-semibold w-[50px]">#</TableHead>
+                    <TableHead className="text-white font-semibold">Kabupaten/Kota</TableHead>
+                    <TableHead className="text-white font-semibold">Kecamatan</TableHead>
+                    <TableHead className="text-white font-semibold">Desa/Kelurahan</TableHead>
+                    <TableHead className="text-white font-semibold">Nama Ketua</TableHead>
+                    <TableHead className="text-white font-semibold">No WA Ketua</TableHead>
+                    <TableHead className="text-white font-semibold">Status Data</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedData.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                        Tidak ada data pengurus ranting yang ditemukan untuk kecamatan ini
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    paginatedData.map((dpra, index) => {
+                      const parentInfo = getDPRAParentInfo(dpra);
+                      return (
+                        <TableRow key={dpra.kode} className="hover:bg-muted/50">
+                          <TableCell>{(currentPage - 1) * itemsPerPage + index + 1}.</TableCell>
+                          <TableCell>{parentInfo.dpd}</TableCell>
+                          <TableCell>{parentInfo.dpc}</TableCell>
+                          <TableCell>{dpra.nama}</TableCell>
+                          <TableCell>{dpra.ketua.nama || <span className="text-muted-foreground">-</span>}</TableCell>
+                          <TableCell>
+                            {dpra.ketua.noHp ? (
+                              <a
+                                href={formatWhatsAppLink(dpra.ketua.noHp)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline flex items-center gap-1"
+                              >
+                                {dpra.ketua.noHp}
+                                <ExternalLink className="h-3 w-3" />
+                              </a>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${
+                              dpra.statusPendataan === "Terisi Penuh" 
+                                ? "bg-orange-500 text-white" 
+                                : dpra.statusPendataan === "Sebagian Terisi"
+                                ? "bg-orange-500 text-white"
+                                : "bg-muted text-muted-foreground"
+                            }`}>
+                              {dpra.statusPendataan === "Terisi Penuh" || dpra.statusPendataan === "Sebagian Terisi"
+                                ? "ADA PENGURUS"
+                                : "KOSONG"}
+                            </span>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Pagination DPRA */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-end gap-2 mt-4">
+                <span className="text-sm text-muted-foreground">
+                  {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, filteredDPRAList.length)} / {filteredDPRAList.length}
+                </span>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
+                  >
+                    «
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
+                  >
+                    ‹
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
+                  >
+                    ›
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage === totalPages}
+                    className="px-2 py-1 text-sm border rounded disabled:opacity-50 hover:bg-muted"
+                  >
+                    »
+                  </button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Info when no kecamatan selected for DPRA */}
+      {selectedDPC === "all" && selectedDPD !== "all" && (
+        <Card className="border-dashed">
+          <CardContent className="py-8 text-center">
+            <MapPin className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <p className="text-muted-foreground">
+              Pilih <span className="font-semibold">Kecamatan</span> untuk melihat data Pengurus Ranting (DPRA)
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Map Section */}
       <Card>
