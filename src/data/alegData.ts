@@ -8,10 +8,80 @@ export interface AnggotaLegislatif {
   dapil: string;
 }
 
+export interface AlegProvinsi {
+  id: number;
+  dapil: string;
+  nama: string;
+  alamat: string;
+  daerah: string;
+  wilayah: string;
+}
+
+export interface AlegDPRRI {
+  id: number;
+  dapil: string;
+  nama: string;
+  wilayah: string;
+}
+
 export interface DPDStatistik {
   dpd: string;
   jumlahAleg: number;
 }
+
+// Data ALEG Perempuan
+export const alegPerempuanData: AnggotaLegislatif[] = [
+  { id: 1, dpd: "Provinsi Jawa Tengah", nama: "Hj. Ida Nurul Farida, M.Pd.", daerah: "Provinsi Jawa Tengah", dapil: "Dapil 2" },
+  { id: 2, dpd: "Banjarnegara", nama: "Sri Rusupiati", daerah: "Banjarnegara", dapil: "Dapil 1" },
+  { id: 3, dpd: "Banyumas", nama: "Atik Luthfiah", daerah: "Banyumas", dapil: "Dapil 1" },
+  { id: 4, dpd: "Cilacap", nama: "Dra. Wiwiek Yuning Prapti", daerah: "Cilacap", dapil: "Dapil 1" },
+  { id: 5, dpd: "Kebumen", nama: "Erwin Puji Oktiana", daerah: "Kebumen", dapil: "Dapil 4" },
+  { id: 6, dpd: "Kudus", nama: "Umi Bariroh", daerah: "Kudus", dapil: "Dapil 4" },
+  { id: 7, dpd: "Kab. Magelang", nama: "Arifah Aprilliani", daerah: "Magelang", dapil: "Dapil 5" },
+  { id: 8, dpd: "Kab. Pekalongan", nama: "Dinda Aniva Nutkhi", daerah: "Pekalongan", dapil: "Dapil 3" },
+  { id: 9, dpd: "Pemalang", nama: "dr. Irma Suryani Widyastuti", daerah: "Pemalang", dapil: "Dapil 1" },
+  { id: 10, dpd: "Pemalang", nama: "Rina Tyastuti", daerah: "Pemalang", dapil: "Dapil 6" },
+  { id: 11, dpd: "Purbalingga", nama: "Niken Hindrianingsih", daerah: "Purbalingga", dapil: "Dapil 1" },
+  { id: 12, dpd: "Purbalingga", nama: "Siti Sifa, S.Pd.", daerah: "Purbalingga", dapil: "Dapil 2" },
+  { id: 13, dpd: "Purbalingga", nama: "Sumarsih, S.I.P., M.Pd.", daerah: "Purbalingga", dapil: "Dapil 4" },
+  { id: 14, dpd: "Kab. Semarang", nama: "Musyarofah", daerah: "Semarang", dapil: "Dapil 1" },
+  { id: 15, dpd: "Sukoharjo", nama: "Siti Zakiyatun Ni'mah", daerah: "Sukoharjo", dapil: "Dapil 4" },
+  { id: 16, dpd: "Sukoharjo", nama: "Sumiyati, S.E.", daerah: "Sukoharjo", dapil: "Dapil 5" },
+  { id: 17, dpd: "Kab. Tegal", nama: "Nurul Fajrin, S.A.P.", daerah: "Tegal", dapil: "Dapil 4" },
+  { id: 18, dpd: "Temanggung", nama: "Elynawati", daerah: "Temanggung", dapil: "Dapil 4" },
+  { id: 19, dpd: "Temanggung", nama: "Herlina Dwi P", daerah: "Temanggung", dapil: "Dapil 6" },
+  { id: 20, dpd: "Wonogiri", nama: "Nyamik Saptati, S.Pd.", daerah: "Wonogiri", dapil: "Dapil 2" },
+  { id: 21, dpd: "Kota Semarang", nama: "Siti Roika", daerah: "Kota Semarang", dapil: "Dapil 1" },
+  { id: 22, dpd: "Kota Semarang", nama: "Dini Inayati", daerah: "Kota Semarang", dapil: "Dapil 3" },
+  { id: 23, dpd: "Kota Surakarta", nama: "Widyastuti", daerah: "Kota Surakarta", dapil: "Dapil 2" },
+  { id: 24, dpd: "Kota Tegal", nama: "Erni Ratnani, SE. MM.", daerah: "Kota Tegal", dapil: "Dapil 4" },
+];
+
+// Data ALEG DPRD Provinsi Jawa Tengah - 11 orang
+export const alegProvinsiData: AlegProvinsi[] = [
+  { id: 1, dapil: "Dapil 1", nama: "H. MUHAMMAD AFIF", alamat: "Gedawang RT. 002, RW. 002, Kecamatan Banyumanik, Kota Semarang", daerah: "Kota Semarang", wilayah: "Kota Semarang" },
+  { id: 2, dapil: "Dapil 2", nama: "Hj. IDA NURUL FARIDA, M.Pd.", alamat: "Nobowetan RT. 001/008, Kecamatan Argomulyo, Kota Salatiga", daerah: "Kota Salatiga", wilayah: "Semarang, Kendal, Kota Salatiga" },
+  { id: 3, dapil: "Dapil 5", nama: "HAFIDZ ALHAQ FATIH, S.T.", alamat: "Totosari No. 32 RT. 004/RW. 014, Pajang, Kecamatan Laweyan, Kota Surakarta", daerah: "Kota Surakarta", wilayah: "Blora, Grobogan" },
+  { id: 4, dapil: "Dapil 6", nama: "DEDY ENDRIYATNO, S.E.", alamat: "Mojomulyo RT. 002/RW. 011, Sragen Kulon, Kecamatan Sragen, Kabupaten Sragen", daerah: "Sragen", wilayah: "Sragen, Karanganyar, Wonogiri" },
+  { id: 5, dapil: "Dapil 7", nama: "MARTONO, S.Pd., M.Si.", alamat: "Kemasan RT. 001/RW. 008, Banmati, Kecamatan Sukoharjo, Kabupaten Sukoharjo", daerah: "Kota Surakarta", wilayah: "Klaten, Sukoharjo, Kota Surakarta" },
+  { id: 6, dapil: "Dapil 8", nama: "H. TUGIMAN, S.P.", alamat: "Wates RT. 006/RW. 005 Tegalgiri, Kecamatan Nogosari, Kabupaten Boyolali", daerah: "Boyolali", wilayah: "Boyolali, Magelang, Kota Magelang" },
+  { id: 7, dapil: "Dapil 9", nama: "AMIR MASDUKI, S.PD.I.", alamat: "Ling Aglik Utara RT. 001/RW. 008 Semawung Daleman, Kecamatan Kutoarjo, Kabupaten Purworejo", daerah: "Purworejo", wilayah: "Temanggung, Wonosobo, Purworejo" },
+  { id: 8, dapil: "Dapil 10", nama: "KARSONO, S.Pd.I.", alamat: "Jl. Suka Damai RT. 001/RW. 003 Mewek, Kecamatan Kalimanah, Kabupaten Purbalingga", daerah: "Purbalingga", wilayah: "Banjarnegara, Kebumen, Purbalingga" },
+  { id: 9, dapil: "Dapil 11", nama: "SETYA ARINUGROHO", alamat: "Jl. Kebocoran RT. 004/RW. 001 Karangsalam Kidul, Kecamatan Kedung Banteng, Kabupaten Banyumas", daerah: "Banyumas", wilayah: "Banyumas, Cilacap" },
+  { id: 10, dapil: "Dapil 12", nama: "H. SURURUL FUAD", alamat: "Krajan II RT. 007/RW. 002 Kalierang, Kecamatan Bumiayu, Kabupaten Brebes", daerah: "Brebes", wilayah: "Kota Tegal, Tegal, Brebes" },
+  { id: 11, dapil: "Dapil 13", nama: "MUCH. MUCHLIS ARISTON, S.T.", alamat: "Jl. KH. A. Dahlan Gg 14 No. 16 RT. 001/RW. 007 Tirto, Kecamatan Pekalongan Barat, Kota Pekalongan", daerah: "Kota Pekalongan", wilayah: "Kota Pekalongan, Pekalongan, Batang, Pemalang" },
+];
+
+// Data ALEG DPR RI Dapil Jawa Tengah - 7 orang
+export const alegDPRRIData: AlegDPRRI[] = [
+  { id: 1, dapil: "Dapil 1", nama: "Dr. H. MUH HARIS, M.Si.", wilayah: "Kota Semarang, Semarang, Kendal, Kota Salatiga" },
+  { id: 2, dapil: "Dapil 4", nama: "Drs. HAMID NOOR YASIN, M.M.", wilayah: "Sragen, Karanganyar, Wonogiri" },
+  { id: 3, dapil: "Dapil 5", nama: "Dr. H. ABDUL KHARIS ALMASYHARI, S.E., M.Si.", wilayah: "Klaten, Sukoharjo, Boyolali, Kota Surakarta" },
+  { id: 4, dapil: "Dapil 7", nama: "H. ROFIK HANANTO, S.E.", wilayah: "Banjarnegara, Kebumen, Purbalingga" },
+  { id: 5, dapil: "Dapil 8", nama: "H. YANUAR ARIF WIBOWO, S.H.", wilayah: "Banyumas, Cilacap" },
+  { id: 6, dapil: "Dapil 9", nama: "Dr. H. ABDUL FIKRI FAQIH, M.M.", wilayah: "Kota Tegal, Tegal, Brebes" },
+  { id: 7, dapil: "Dapil 10", nama: "Rizal Bawazier, Amd.Pjk.", wilayah: "Kota Pekalongan, Pekalongan, Batang, Pemalang" },
+];
 
 // Data ALEG DPRD Kabupaten/Kota
 export const alegData: AnggotaLegislatif[] = [
@@ -265,4 +335,45 @@ export const getTopDPD = (limit: number = 10): DPDStatistik[] => {
 
 export const getTotalAleg = (): number => {
   return alegData.length;
+};
+
+export const getTotalAlegPerempuan = (): number => {
+  return alegPerempuanData.length;
+};
+
+export const getTotalAlegProvinsi = (): number => {
+  return alegProvinsiData.length;
+};
+
+export const getTotalAlegDPRRI = (): number => {
+  return alegDPRRIData.length;
+};
+
+export const searchAlegPerempuan = (query: string): AnggotaLegislatif[] => {
+  const lowerQuery = query.toLowerCase();
+  return alegPerempuanData.filter(item => 
+    item.dpd.toLowerCase().includes(lowerQuery) ||
+    item.nama.toLowerCase().includes(lowerQuery) ||
+    item.daerah.toLowerCase().includes(lowerQuery) ||
+    item.dapil.toLowerCase().includes(lowerQuery)
+  );
+};
+
+export const searchAlegProvinsi = (query: string): AlegProvinsi[] => {
+  const lowerQuery = query.toLowerCase();
+  return alegProvinsiData.filter(item => 
+    item.nama.toLowerCase().includes(lowerQuery) ||
+    item.daerah.toLowerCase().includes(lowerQuery) ||
+    item.dapil.toLowerCase().includes(lowerQuery) ||
+    item.wilayah.toLowerCase().includes(lowerQuery)
+  );
+};
+
+export const searchAlegDPRRI = (query: string): AlegDPRRI[] => {
+  const lowerQuery = query.toLowerCase();
+  return alegDPRRIData.filter(item => 
+    item.nama.toLowerCase().includes(lowerQuery) ||
+    item.dapil.toLowerCase().includes(lowerQuery) ||
+    item.wilayah.toLowerCase().includes(lowerQuery)
+  );
 };
