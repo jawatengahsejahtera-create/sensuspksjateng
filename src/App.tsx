@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import RKRAT from "./pages/RKRAT";
 import TrackingPengurus from "./pages/TrackingPengurus";
+import AnggotaLegislatif from "./pages/AnggotaLegislatif";
 import Login from "./pages/Login";
 import AdminApprovals from "./pages/AdminApprovals";
 import RKRATApprovals from "./pages/RKRATApprovals";
@@ -49,6 +50,16 @@ const App = () => (
               <ProtectedRoute>
                 <DashboardLayout>
                   <TrackingPengurus />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/anggota-legislatif"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <AnggotaLegislatif />
                 </DashboardLayout>
               </ProtectedRoute>
             }
