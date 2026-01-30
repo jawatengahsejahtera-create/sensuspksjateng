@@ -32,7 +32,7 @@ import {
   hafalanAnakData,
   pendapatanNishabData,
 } from "@/data/pksData";
-import { pendidikanData, levelRukunUPAData, lamaPembinaanData } from "@/data/additionalPksData";
+import { pendidikanData, levelRukunUPAData } from "@/data/additionalPksData";
 import {
   alasanTidakKerjaData,
   pekerjaanUtamaData,
@@ -48,6 +48,13 @@ import {
   dampakPolitikKarirLengkapData,
   dukunganPasanganData,
 } from "@/data/completeData";
+import {
+  bpjsLengkapData,
+  lamaPembinaanLengkapData,
+  peranMasyarakatData,
+  penerimaanMasyarakatData,
+  ketahananEkonomiData,
+} from "@/data/fullCensusData";
 
 interface DataChartProps {
   kabupaten: string;
@@ -186,6 +193,75 @@ export const DataChart = ({ kabupaten, jenjang, category }: DataChartProps) => {
         return [
           { name: "Di Bawah Nishab", value: data.dibawahNishab, fill: COLORS[0] },
           { name: "Di Atas Nishab", value: data.diatasNishab, fill: COLORS[1] },
+        ];
+      }
+      case "bpjs": {
+        const data = bpjsLengkapData[kabupaten]?.[jenjang];
+        if (!data) return [];
+        return [
+          { name: "Asuransi Swasta", value: data.asuransiSwasta, fill: COLORS[0] },
+          { name: "BPJS PBI", value: data.bpjsPbi, fill: COLORS[1] },
+          { name: "BPJS Non-PBI", value: data.bpjsNonPbi, fill: COLORS[2] },
+          { name: "Keduanya", value: data.keduanya, fill: COLORS[3] },
+          { name: "Tidak Memiliki", value: data.tidakMemiliki, fill: COLORS[4] },
+        ];
+      }
+      case "lamaPembinaan": {
+        const data = lamaPembinaanLengkapData[kabupaten]?.[jenjang];
+        if (!data) return [];
+        return [
+          { name: "≤5 tahun", value: data.kurang5, fill: COLORS[0] },
+          { name: "6-10 tahun", value: data.antara6_10, fill: COLORS[1] },
+          { name: "11-15 tahun", value: data.antara11_15, fill: COLORS[2] },
+          { name: "16-20 tahun", value: data.antara16_20, fill: COLORS[3] },
+          { name: "21-25 tahun", value: data.antara21_25, fill: COLORS[4] },
+          { name: ">25 tahun", value: data.lebih25, fill: COLORS[5] },
+        ];
+      }
+      case "peranMasyarakat": {
+        const data = peranMasyarakatData[kabupaten]?.[jenjang];
+        if (!data) return [];
+        return [
+          { name: "Aktivis Sosial", value: data.aktivisSosial, fill: COLORS[0] },
+          { name: "Anggota Biasa", value: data.anggotaBiasa, fill: COLORS[1] },
+          { name: "Guru Mengaji", value: data.guruMengaji, fill: COLORS[2] },
+          { name: "Pengurus Ormas", value: data.pengurusOrmas, fill: COLORS[3] },
+          { name: "Pengurus RT/RW", value: data.pengurusRtRw, fill: COLORS[4] },
+          { name: "Tokoh Agama", value: data.tokohAgama, fill: COLORS[5] },
+          { name: "Tokoh Masyarakat", value: data.tokohMasyarakat, fill: COLORS[6] },
+        ];
+      }
+      case "penerimaanMasyarakat": {
+        const data = penerimaanMasyarakatData[kabupaten]?.[jenjang];
+        if (!data) return [];
+        return [
+          { name: "Sangat Tidak Diterima", value: data.sangatTidakDiterima, fill: COLORS[0] },
+          { name: "Tidak Diterima", value: data.tidakDiterima, fill: COLORS[4] },
+          { name: "Netral", value: data.netral, fill: COLORS[3] },
+          { name: "Diterima", value: data.diterima, fill: COLORS[2] },
+          { name: "Sangat Diterima", value: data.sangatDiterima, fill: COLORS[1] },
+        ];
+      }
+      case "ketahananEkonomi": {
+        const data = ketahananEkonomiData[kabupaten];
+        if (!data) return [];
+        return [
+          { name: "Sangat Tidak Setuju", value: data.sangatTidakSetuju, fill: COLORS[0] },
+          { name: "Tidak Setuju", value: data.tidakSetuju, fill: COLORS[4] },
+          { name: "Ragu-ragu", value: data.raguRagu, fill: COLORS[3] },
+          { name: "Setuju", value: data.setuju, fill: COLORS[2] },
+          { name: "Sangat Setuju", value: data.sangatSetuju, fill: COLORS[1] },
+        ];
+      }
+      case "dukunganPasangan": {
+        const data = dukunganPasanganData[kabupaten]?.[jenjang];
+        if (!data) return [];
+        return [
+          { name: "Sangat Negatif", value: data.sangatNegatif, fill: COLORS[0] },
+          { name: "Negatif", value: data.negatif, fill: COLORS[4] },
+          { name: "Netral", value: data.netral, fill: COLORS[3] },
+          { name: "Positif", value: data.positif, fill: COLORS[2] },
+          { name: "Sangat Positif", value: data.sangatPositif, fill: COLORS[1] },
         ];
       }
       case "alasanTidakKerja": {
