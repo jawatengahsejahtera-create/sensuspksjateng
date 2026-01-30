@@ -140,6 +140,42 @@ const AnggotaLegislatif = () => {
         </p>
       </div>
 
+      {/* Search and Filter - Moved to top */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Search className="h-5 w-5" />
+            Cari Anggota Legislatif
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Cari nama, DPD, daerah, atau dapil..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={selectedDPD} onValueChange={setSelectedDPD}>
+              <SelectTrigger className="w-full md:w-[250px]">
+                <SelectValue placeholder="Pilih DPD" />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-50">
+                <SelectItem value="all">Semua DPD</SelectItem>
+                {allDPD.map((dpd) => (
+                  <SelectItem key={dpd} value={dpd}>
+                    {dpd}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
@@ -251,41 +287,6 @@ const AnggotaLegislatif = () => {
           <TabsTrigger value="provinsi">DPRD Provinsi</TabsTrigger>
           <TabsTrigger value="dprri">DPR RI</TabsTrigger>
         </TabsList>
-
-        {/* Search and Filter */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Cari Anggota Legislatif</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Cari nama, DPD, daerah, atau dapil..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              {activeTab === "dprd" && (
-                <Select value={selectedDPD} onValueChange={setSelectedDPD}>
-                  <SelectTrigger className="w-full md:w-[250px]">
-                    <SelectValue placeholder="Pilih DPD" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background z-50">
-                    <SelectItem value="all">Semua DPD</SelectItem>
-                    {allDPD.map((dpd) => (
-                      <SelectItem key={dpd} value={dpd}>
-                        {dpd}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* DPRD Kab/Kota Tab */}
         <TabsContent value="dprd">
