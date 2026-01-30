@@ -32,6 +32,22 @@ import {
   hafalanAnakData,
   pendapatanNishabData,
 } from "@/data/pksData";
+import { pendidikanData, levelRukunUPAData, lamaPembinaanData } from "@/data/additionalPksData";
+import {
+  alasanTidakKerjaData,
+  pekerjaanUtamaData,
+  umurAnakData,
+  sekolahAnakData,
+  pendidikanAnakData,
+  jenisBantuanData,
+  sumberBantuanData,
+  programDibutuhkanData,
+  pendapatanSESLengkapData,
+  dampakPolitikPasanganLengkapData,
+  dampakPolitikAnakLengkapData,
+  dampakPolitikKarirLengkapData,
+  dukunganPasanganData,
+} from "@/data/completeData";
 
 interface DataChartProps {
   kabupaten: string;
@@ -170,6 +186,133 @@ export const DataChart = ({ kabupaten, jenjang, category }: DataChartProps) => {
         return [
           { name: "Di Bawah Nishab", value: data.dibawahNishab, fill: COLORS[0] },
           { name: "Di Atas Nishab", value: data.diatasNishab, fill: COLORS[1] },
+        ];
+      }
+      case "alasanTidakKerja": {
+        const data = alasanTidakKerjaData[kabupaten]?.[jenjang];
+        if (!data) return [];
+        return [
+          { name: "Ibu Rumah Tangga", value: data.ibuRumahTangga, fill: COLORS[0] },
+          { name: "Lainnya", value: data.lainnya, fill: COLORS[1] },
+          { name: "Pensiun", value: data.pensiun, fill: COLORS[2] },
+          { name: "PHK", value: data.phk, fill: COLORS[3] },
+          { name: "Sekolah", value: data.sekolah, fill: COLORS[4] },
+          { name: "Usaha Bangkrut", value: data.usahaBangkrut, fill: COLORS[5] },
+        ];
+      }
+      case "pekerjaanUtama": {
+        const data = pekerjaanUtamaData[kabupaten]?.[jenjang];
+        if (!data) return [];
+        return [
+          { name: "Berusaha Sendiri", value: data.berusahaSendiri, fill: COLORS[0] },
+          { name: "Pegawai/Karyawan", value: data.pegawai, fill: COLORS[1] },
+          { name: "Serabutan", value: data.serabutan, fill: COLORS[2] },
+        ];
+      }
+      case "pendidikan": {
+        const data = pendidikanData[kabupaten]?.[jenjang];
+        if (!data) return [];
+        return [
+          { name: "SMA/sederajat", value: data.sma, fill: COLORS[0] },
+          { name: "Diploma", value: data.diploma, fill: COLORS[1] },
+          { name: "S1", value: data.s1, fill: COLORS[2] },
+          { name: "S2", value: data.s2, fill: COLORS[3] },
+          { name: "S3", value: data.s3, fill: COLORS[4] },
+        ];
+      }
+      case "levelRukunUPA": {
+        const data = levelRukunUPAData[kabupaten]?.[jenjang];
+        if (!data) return [];
+        return [
+          { name: "Rendah", value: data.rendah, fill: COLORS[0] },
+          { name: "Sedang", value: data.sedang, fill: COLORS[2] },
+          { name: "Tinggi", value: data.tinggi, fill: COLORS[1] },
+        ];
+      }
+      case "umurAnak": {
+        const data = umurAnakData[kabupaten];
+        if (!data) return [];
+        return [
+          { name: "< 6 tahun", value: data.kurang6, fill: COLORS[0] },
+          { name: "6-12 tahun", value: data.antara6_12, fill: COLORS[1] },
+          { name: "13-15 tahun", value: data.antara13_15, fill: COLORS[2] },
+          { name: "16-18 tahun", value: data.antara16_18, fill: COLORS[3] },
+          { name: "> 18 tahun", value: data.lebih18, fill: COLORS[4] },
+        ];
+      }
+      case "sekolahAnak": {
+        const data = sekolahAnakData[kabupaten];
+        if (!data) return [];
+        return [
+          { name: "< 3 Anak", value: data.kurang3, fill: COLORS[1] },
+          { name: "3-5 Anak", value: data.antara3_5, fill: COLORS[2] },
+          { name: ">= 6 Anak", value: data.lebih6, fill: COLORS[3] },
+        ];
+      }
+      case "pendidikanAnak": {
+        const data = pendidikanAnakData[kabupaten];
+        if (!data) return [];
+        return [
+          { name: "TB/TK", value: data.tbTk, fill: COLORS[0] },
+          { name: "SD/MI", value: data.sdMi, fill: COLORS[1] },
+          { name: "SMP/MTs", value: data.smpMts, fill: COLORS[2] },
+          { name: "SMA/MA", value: data.smaMa, fill: COLORS[3] },
+          { name: "Diploma", value: data.diploma, fill: COLORS[4] },
+          { name: "S1", value: data.s1, fill: COLORS[5] },
+        ];
+      }
+      case "pendapatanSES": {
+        const data = pendapatanSESLengkapData[kabupaten]?.[jenjang];
+        if (!data) return [];
+        return [
+          { name: "Rendah", value: data.rendah, fill: COLORS[0] },
+          { name: "Menengah", value: data.menengah, fill: COLORS[2] },
+          { name: "Menengah Atas", value: data.menengahAtas, fill: COLORS[3] },
+          { name: "Tinggi", value: data.tinggi, fill: COLORS[1] },
+        ];
+      }
+      case "dampakPolitikPasangan": {
+        const data = dampakPolitikPasanganLengkapData[kabupaten]?.[jenjang];
+        if (!data) return [];
+        return [
+          { name: "Sangat Negatif", value: data.sangatNegatif, fill: COLORS[0] },
+          { name: "Negatif", value: data.negatif, fill: COLORS[4] },
+          { name: "Netral", value: data.netral, fill: COLORS[3] },
+          { name: "Positif", value: data.positif, fill: COLORS[2] },
+          { name: "Sangat Positif", value: data.sangatPositif, fill: COLORS[1] },
+        ];
+      }
+      case "jenisBantuan": {
+        const data = jenisBantuanData[kabupaten];
+        if (!data) return [];
+        return [
+          { name: "PKH", value: data.pkh, fill: COLORS[0] },
+          { name: "KIP", value: data.kip, fill: COLORS[1] },
+          { name: "BPNT", value: data.bpnt, fill: COLORS[2] },
+          { name: "KUR", value: data.kur, fill: COLORS[3] },
+          { name: "Lainnya", value: data.lainnya, fill: COLORS[4] },
+        ];
+      }
+      case "sumberBantuan": {
+        const data = sumberBantuanData[kabupaten];
+        if (!data) return [];
+        return [
+          { name: "Anggota Dewan", value: data.anggotaDewan, fill: COLORS[0] },
+          { name: "Struktur", value: data.struktur, fill: COLORS[1] },
+          { name: "Mitra Strategis", value: data.mitraStrategis, fill: COLORS[2] },
+          { name: "Pemerintah", value: data.pemerintah, fill: COLORS[3] },
+          { name: "Lainnya", value: data.lainnya, fill: COLORS[4] },
+        ];
+      }
+      case "programDibutuhkan": {
+        const data = programDibutuhkanData[kabupaten];
+        if (!data) return [];
+        return [
+          { name: "Beasiswa", value: data.beasiswa, fill: COLORS[0] },
+          { name: "Modal Usaha", value: data.modalUsaha, fill: COLORS[1] },
+          { name: "Pelatihan", value: data.pelatihan, fill: COLORS[2] },
+          { name: "Asuransi", value: data.asuransi, fill: COLORS[3] },
+          { name: "Konseling", value: data.konseling, fill: COLORS[4] },
         ];
       }
       default:
