@@ -21,10 +21,13 @@ import {
   TrendingUp,
   BookOpen
 } from "lucide-react";
+import { categoryGroupLabels } from "./SearchFilters";
 
 interface CategorySelectorProps {
   selectedCategory: DataCategory;
   onCategoryChange: (category: DataCategory) => void;
+  filteredCategories: DataCategory[];
+  selectedGroup: string;
 }
 
 const categoryIcons: Record<DataCategory, React.ReactNode> = {
@@ -63,28 +66,24 @@ const categoryIcons: Record<DataCategory, React.ReactNode> = {
   programDibutuhkan: <Target className="w-5 h-5" />,
 };
 
-const availableCategories: DataCategory[] = [
-  "jumlahAnggota",
-  "jenisKelamin",
-  "kelompokUmur",
-  "statusKerja",
-  "punyaBinaan",
-  "terlibatKepengurusan",
-  "bayarIuran",
-  "pendapatanNishob",
-  "ketahananKeluarga",
-  "jumlahAnak",
-  "hafalanAnak",
-  "terimaBantuan",
-  "frekKonflik"
-];
-
-export const CategorySelector = ({ selectedCategory, onCategoryChange }: CategorySelectorProps) => {
+export const CategorySelector = ({ 
+  selectedCategory, 
+  onCategoryChange, 
+  filteredCategories, 
+  selectedGroup 
+}: CategorySelectorProps) => {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-foreground">Pilih Kategori Data</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-foreground">Pilih Kategori Data</h3>
+        {selectedGroup !== "semua" && (
+          <span className="text-sm text-muted-foreground bg-secondary px-3 py-1 rounded-full">
+            {categoryGroupLabels[selectedGroup]}
+          </span>
+        )}
+      </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-        {availableCategories.map((category) => (
+        {filteredCategories.map((category) => (
           <Card
             key={category}
             onClick={() => onCategoryChange(category)}

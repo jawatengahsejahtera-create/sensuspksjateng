@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SearchFilters } from "@/components/SearchFilters";
+import { SearchFilters, categoryGroups, categoryGroupLabels } from "@/components/SearchFilters";
 import { CategorySelector } from "@/components/CategorySelector";
 import { DataChart } from "@/components/DataChart";
 import { SummaryCards } from "@/components/SummaryCards";
@@ -13,8 +13,28 @@ const Index = () => {
   const [selectedKabupaten, setSelectedKabupaten] = useState("");
   const [selectedJenjang, setSelectedJenjang] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<DataCategory>("jumlahAnggota");
+  const [selectedCategoryGroup, setSelectedCategoryGroup] = useState("semua");
 
   const isSearchReady = selectedKabupaten && selectedJenjang;
+
+  // Get filtered categories based on selected group
+  const filteredCategories = useMemo(() => {
+    if (selectedCategoryGroup === "semua") {
+      return Object.values(categoryGroups).flat();
+    }
+    return categoryGroups[selectedCategoryGroup as keyof typeof categoryGroups] || [];
+  }, [selectedCategoryGroup]);
+
+  // Reset category when group changes if current category is not in new group
+  const handleCategoryGroupChange = (value: string) => {
+    setSelectedCategoryGroup(value);
+    if (value !== "semua") {
+      const groupCategories = categoryGroups[value as keyof typeof categoryGroups] || [];
+      if (!groupCategories.includes(selectedCategory)) {
+        setSelectedCategory(groupCategories[0] || "jumlahAnggota");
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -56,8 +76,10 @@ const Index = () => {
             <SearchFilters
               selectedKabupaten={selectedKabupaten}
               selectedJenjang={selectedJenjang}
+              selectedCategoryGroup={selectedCategoryGroup}
               onKabupatenChange={setSelectedKabupaten}
               onJenjangChange={setSelectedJenjang}
+              onCategoryGroupChange={handleCategoryGroupChange}
             />
           </CardContent>
         </Card>
@@ -100,6 +122,8 @@ const Index = () => {
                 <CategorySelector
                   selectedCategory={selectedCategory}
                   onCategoryChange={setSelectedCategory}
+                  filteredCategories={filteredCategories}
+                  selectedGroup={selectedCategoryGroup}
                 />
               </CardContent>
             </Card>
@@ -117,6 +141,9 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground text-center">
                   Menampilkan data untuk <strong className="text-foreground">{selectedKabupaten}</strong> dengan 
                   Jenjang Kaderisasi <strong className="text-primary">{selectedJenjang}</strong>
+                  {selectedCategoryGroup !== "semua" && (
+                    <span> - Kategori: <strong className="text-primary">{categoryGroupLabels[selectedCategoryGroup]}</strong></span>
+                  )}
                 </p>
               </CardContent>
             </Card>
