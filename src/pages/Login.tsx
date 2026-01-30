@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, LogIn, UserPlus } from "lucide-react";
 import logoPks from "@/assets/logo-pks.jpg";
-
+import loginBg from "@/assets/login-bg.png";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -108,8 +108,11 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <Card className="w-full max-w-md shadow-elegant border-t-4 border-t-primary">
+    <div 
+      className="min-h-screen flex items-center justify-center px-4 bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${loginBg})` }}
+    >
+      <Card className="w-full max-w-md shadow-elegant border-t-4 border-t-primary bg-card/95 backdrop-blur-sm">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
             <img
