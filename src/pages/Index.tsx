@@ -84,30 +84,18 @@ const Index = () => {
           </CardContent>
         </Card>
 
-        {/* Overview Charts - Always Visible */}
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-primary" />
-            {isSearchReady ? `Data ${selectedKabupaten} - Jenjang ${selectedJenjang}` : "Data Keseluruhan Jawa Tengah"}
-          </h2>
-          <OverviewChart 
-            selectedKabupaten={selectedKabupaten} 
-            selectedJenjang={selectedJenjang} 
-          />
-        </div>
-
-        {/* Detailed Content */}
+        {/* Content - Only show when filters are selected */}
         {!isSearchReady ? (
           <Card className="shadow-card border-dashed border-2">
-            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <CardContent className="flex flex-col items-center justify-center py-16 text-center">
               <div className="p-4 rounded-full bg-secondary mb-4">
-                <Search className="w-10 h-10 text-muted-foreground" />
+                <BarChart3 className="w-12 h-12 text-primary" />
               </div>
               <h3 className="text-lg font-semibold text-foreground mb-2">
-                Ingin Lihat Data Per Daerah?
+                Pilih Filter untuk Melihat Data
               </h3>
               <p className="text-muted-foreground max-w-md text-sm">
-                Pilih Kabupaten/Kota dan Jenjang Kaderisasi di atas untuk melihat data statistik detail per daerah
+                Silakan pilih <strong>Kabupaten/Kota</strong> dan <strong>Jenjang Kaderisasi</strong> di atas untuk menampilkan grafik data sensus
               </p>
             </CardContent>
           </Card>
