@@ -2,21 +2,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { kabupatenList, jenjangList, DataCategory, categoryLabels } from "@/data/pksData";
 import { MapPin, GraduationCap, Database } from "lucide-react";
 
-// Group categories for dropdown filter
+// Group categories for dropdown filter - now with ALL 29 categories
 export const categoryGroups = {
   demografi: ["jumlahAnggota", "jenisKelamin", "kelompokUmur", "pendidikan"] as DataCategory[],
-  kesejahteraan: ["bpjs", "statusKerja", "pendapatanNishob", "terimaBantuan"] as DataCategory[],
+  kesejahteraan: ["bpjs", "statusKerja", "alasanTidakKerja", "pekerjaanUtama", "pendapatanSES", "pendapatanNishob", "terimaBantuan", "jenisBantuan", "sumberBantuan", "programDibutuhkan"] as DataCategory[],
   organisasi: ["lamaPembinaan", "punyaBinaan", "terlibatKepengurusan", "bayarIuran", "levelRukunUPA"] as DataCategory[],
-  sosial: ["peranMasyarakat", "penerimaanMasyarakat", "dampakPolitikPasangan", "dampakPolitikAnak", "dampakPolitikKarir"] as DataCategory[],
-  keluarga: ["jumlahAnak", "ketahananKeluarga", "hafalanAnak", "frekKonflik"] as DataCategory[],
+  sosial: ["peranMasyarakat", "penerimaanMasyarakat", "dampakPolitikPasangan", "dampakPolitikAnak", "dampakPolitikKarir", "dukunganPasangan"] as DataCategory[],
+  keluarga: ["jumlahAnak", "umurAnak", "sekolahAnak", "pendidikanAnak", "hafalanAnak", "ketahananKeluarga", "frekKonflik", "ketahananEkonomi"] as DataCategory[],
 };
 
 export const categoryGroupLabels: Record<string, string> = {
   demografi: "Data Demografi",
-  kesejahteraan: "Data Kesejahteraan",
+  kesejahteraan: "Data Kesejahteraan & Bantuan",
   organisasi: "Data Organisasi",
-  sosial: "Data Sosial",
-  keluarga: "Data Keluarga",
+  sosial: "Data Sosial & Politik",
+  keluarga: "Data Keluarga & Anak",
 };
 
 interface SearchFiltersProps {
